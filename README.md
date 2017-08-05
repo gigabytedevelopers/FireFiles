@@ -1,7 +1,7 @@
 Gigs-Explorer Gigabyte File Manager
 ==================================
 [<img alt="Get it on Google Play" height="80" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=com.gigabytedevelopersinc.app.explorer&referrer=github)
-[<img alt="Get it on Amazon" height="60" style="margin-left: 8px; margin-top: -10px;" src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-underground-app-us-black.png" />](https://www.amazon.com/gp/mas/dl/android?p=com.gigabytedevelopersinc.app.explorer)
+[<img alt="Get it on Amazon" height="80" style="margin-left: 10px;" src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-underground-app-us-black.png" />](https://www.amazon.com/gp/mas/dl/android?p=com.gigabytedevelopersinc.app.explorer)
 
 
 ![GigsExplorer](https://raw.githubusercontent.com/gigabytedevelopers/Gigs-Explorer/master/BadgeIcon.png)
@@ -44,7 +44,7 @@ Feedback is greatly appreciated. Any issues please report through mail only to g
 
 Discussion
 ============
-Join [G+ community](https://plus.google.com/communities/103917569291382037041) for more discussions
+Join [G+ community](https://plus.google.com/communities/103917569291382037041) or our [Facebook Page](https://facebook.com/gigabytedevelopersinc) for more discussions
 
 
 Developed By
