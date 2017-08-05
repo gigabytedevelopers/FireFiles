@@ -4,7 +4,7 @@ Gigs-Explorer Gigabyte File Manager
 [<img alt="Get it on Amazon" height="60" style="margin-left: 8px;" src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-underground-app-us-black.png" />](https://www.amazon.com/gp/mas/dl/android?p=com.gigabytedevelopersinc.app.explorer)
 
 
-![GigsExplorer](https://github.com/gigabytedevelopers/GigsExplorer/raw/master/web_hi_res_512.jpg)
+![GigsExplorer](https://github.com/gigabytedevelopers/GigsExplorer/raw/master/web_hi_res_512.png)
 
 Gigs-Explorer (File Explorer) is an all-in-one file management tool.
 
