@@ -23,9 +23,9 @@ android {
     }
     buildTypes {
         debug {
-            minifyEnabled false
-            shrinkResources false
-            useProguard false
+            minifyEnabled true
+            shrinkResources true
+            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard/proguard-project.pro',
                     'proguard/proguard-google-play-services.pro'
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Hari Krishna Dulipudi
+ * Copyright (C) 2017 Gigabyte Developers Incorporated
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -523,7 +523,7 @@ public class Utils {
         ShareCompat.IntentBuilder
                 .from(activity)
                 .setEmailTo(new String[]{"gigabytedevelopers@gmail.com"})
-                .setSubject("GigsExplorer Feedback" + getSuffix())
+                .setSubject("FireFiles Feedback" + getSuffix())
                 .setType("text/email")
                 .setChooserTitle("Send Feedback")
                 .startChooser();

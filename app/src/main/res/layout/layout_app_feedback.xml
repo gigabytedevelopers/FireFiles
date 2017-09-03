@@ -57,7 +57,7 @@
                         android:layout_weight="1"
                         android:ellipsize="middle"
                         android:singleLine="true"
-                        android:text="Enjoying GigsExplorer?"
+                        android:text="Enjoying FireFiles?"
                         android:textAlignment="viewStart"
                         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                         android:textColor="?android:attr/textColorPrimary" />

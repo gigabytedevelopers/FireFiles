@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Hari Krishna Dulipudi
+ * Copyright (C) 2017 Gigabyte Developers Incorporated
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,7 +151,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 						.from(this)
 						.setText(shareText)
 						.setType("text/plain")
-						.setChooserTitle("Share GigsExplorer")
+						.setChooserTitle("Share FireFiles")
 						.startChooser();
 				AnalyticsManager.logEvent("app_share");
 				break;

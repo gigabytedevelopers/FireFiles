@@ -59,13 +59,13 @@
 
     <!-- Representation of download progress percentage when running. [CHAR LIMIT=24] -->
     <string name="download_running_percent">In progress, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
-    <string name="name">GigsExplorer</string>
-    <string name="app_name">GigsExplorer</string>
-    <string name="app_ver">Gigabyte Explorer</string>
+    <string name="name">FireFiles</string>
+    <string name="app_name">FireFiles</string>
+    <string name="app_ver">FireFiles</string>
     <string name="app_company">Developed By Gigabyte Developers Incorporated</string>
-    <string name="app_url">http://www.gigabytedevelopersinc.com</string>
+    <string name="app_url">http://www.gigabytedevelopersinc.com/apps/FireFiles</string>
     <string name="app_about_info">To make a small difference.</string>
-    <string name="app_contrib">Contributions by Hari Krishna Dulipudi</string>
+    <string name="app_contrib">Contributions by Martins Victor, Emmanuel Okocha, Mezue Ceejay</string>
     <string name="app_about">This file explorer helps you  organise your files, save app, monitor process and lots more</string>
     <string name="twitter"><a href="https://twitter.com/gigabytedevsinc">  Twitter</a></string>
     <string name="facebook"><a href="https://facebook.com/gigabytedevelopersinc">  Facebook</a></string>
@@ -128,7 +128,6 @@
     <string name="uncompress_error">Failed to uncompress</string>
     <string name="add">Add</string>
     <string name="made_with_love">Made with Love</string>
-    <string name="dworks_logo">DWorkS logo</string>
 
     <string-array name="theme_style_names">
         <item>Light</item>
