@@ -27,7 +27,7 @@
         android:elevation="8dp"
         app:contentInsetLeft="@dimen/second_keyline_default"
         app:contentInsetStart="@dimen/second_keyline_default"
-        app:popupTheme="?attr/actionBarPopupTheme"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="?attr/actionBarTheme">
 
         <Spinner

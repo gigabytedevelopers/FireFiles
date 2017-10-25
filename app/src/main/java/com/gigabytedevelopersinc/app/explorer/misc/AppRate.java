@@ -22,8 +22,8 @@ import static com.gigabytedevelopersinc.app.explorer.misc.Utils.openFeedback;
 import static com.gigabytedevelopersinc.app.explorer.misc.Utils.openPlaystore;
 
 /**
- * Created by nicolas on 06/03/14.
- */
+ * @author Created by Emmanuel Nwokoma (Founder and CEO at Gigabyte Developers) on 09/21/2017
+ **/
 public class AppRate implements View.OnClickListener{
 
     private static final String PREFS_NAME = "app_rate_prefs";

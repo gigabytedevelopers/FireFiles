@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Emmanuel Nwokoma (Founder and CEO at Gigabyte Developers Incorporated)
+ * Copyright (C) 2017 Emmanuel Nwokoma (Founder and CEO at Gigabyte Developers Incorporated)
  * Copyright (C) 2016 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

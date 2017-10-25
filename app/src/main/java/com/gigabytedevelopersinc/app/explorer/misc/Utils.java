@@ -364,7 +364,7 @@ public class Utils {
         if(isAmazonBuild()){
             return Uri.parse("http://www.amazon.com/gp/mas/dl/android?p=" + BuildConfig.APPLICATION_ID + "&showAll=1");
         }
-        return Uri.parse("https://play.google.com/store/apps/dev?id=8683545855643814241");
+        return Uri.parse("http://play.google.com/store/apps/dev?id=4617962611760843834");
     }
 
     public static boolean hasFeature(Context context, String feature) {

@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
 
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
@@ -12,11 +12,13 @@ android {
     }
 
     defaultConfig {
-        versionName "1.1"
-        versionCode = 11
+        versionName "2.0"
+        versionCode = 12
         minSdkVersion 17
-        targetSdkVersion 25
+        targetSdkVersion 26
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
+        resConfigs "en"
     }
     signingConfigs {
         release
@@ -72,8 +74,21 @@ android {
         }
     }
     packagingOptions {
-        exclude 'META-INF/LICENSE'
         exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/spring.schemas'
+        exclude 'META-INF/spring.tooling'
+        exclude 'META-INF/spring.handlers'
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/INDEX.LIST'
     }
     lintOptions {
         abortOnError false
@@ -84,17 +99,17 @@ android {
 }
 
 ext {
-    supportLibVersion = '25.1.1'
+    supportLibVersion = '26.1.0'
     gmsVersion = '10.2.0'
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.jaredrummler:android-processes:+'
-    compile 'com.github.mjdev:libaums:+'
-    compile 'org.apache.ftpserver:ftpserver-core:+'
-    compile 'commons-net:commons-net:+'
-    compile 'com.cloudrail:cloudrail-si-android:+'
+    compile 'com.jaredrummler:android-processes:1.1.1'
+    compile 'com.github.mjdev:libaums:0.5.5'
+    compile 'org.apache.ftpserver:ftpserver-core:1.1.1'
+    compile 'commons-net:commons-net:3.6'
+    compile 'com.cloudrail:cloudrail-si-android:2.20.0'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:cardview-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
@@ -102,7 +117,7 @@ dependencies {
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:+'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
 }
 
 /* def props = new Properties()
