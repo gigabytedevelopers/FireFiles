@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground"
+    android:clipToPadding="false"
+    android:paddingBottom="20dp"
+    android:scrollbarStyle="outsideOverlay">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="5dp">
+
+        <com.gigabytedevelopersinc.app.explorer.ui.HomeItem
+            android:id="@+id/storage_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.gigabytedevelopersinc.app.explorer.ui.HomeItem
+            android:id="@+id/seconday_storage_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <com.gigabytedevelopersinc.app.explorer.ui.HomeItem
+            android:id="@+id/usb_storage_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <com.gigabytedevelopersinc.app.explorer.ui.HomeItem
+            android:id="@+id/memory_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.gigabytedevelopersinc.app.explorer.ui.RecyclerViewPlus
+            android:id="@+id/shortcuts_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:clipToPadding="false"
+            android:padding="10dp"
+            app:columnWidth="100dp"
+            app:type="gallery" />
+
+        <LinearLayout
+            android:id="@+id/recents_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:gravity="start|center_vertical"
+                    android:minHeight="36dp"
+                    android:paddingStart="10dp"
+                    android:text="Recent Media"
+                    android:textAlignment="viewStart"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/recents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:clickable="true"
+                    android:gravity="end|center_vertical"
+                    android:minHeight="36dp"
+                    android:paddingEnd="10dp"
+                    android:text="MORE"
+                    android:textAlignment="viewEnd"
+                    android:textAllCaps="true"
+                    android:textColor="@color/accentColor" />
+
+            </FrameLayout>
+
+            <com.gigabytedevelopersinc.app.explorer.ui.RecyclerViewPlus
+                android:id="@+id/recents_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:minHeight="@dimen/grid_item_height"
+                android:paddingEnd="@dimen/list_item_padding"
+                android:paddingStart="10dp"
+                app:columnWidth="@dimen/grid_item_height"
+                app:type="@integer/recycler_type" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</ScrollView>

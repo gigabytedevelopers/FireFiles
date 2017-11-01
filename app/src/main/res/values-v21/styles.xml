@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ListProgress" parent="@android:style/Widget.Material.ProgressBar"/>
+
+    <style name="PopupTheme" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">
+    </style>
+    <style name="Theme.Setting" parent="@style/DocumentsTheme">
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="android:statusBarColor">@color/md_blue_700</item>
+        <item name="colorControlNormal">?android:attr/textColorPrimary</item>
+        <item name="colorControlActivated">?android:attr/textColorPrimary</item>
+        <item name="windowActionBar">true</item>
+    </style>
+</resources>
