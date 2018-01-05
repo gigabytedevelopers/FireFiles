@@ -8,9 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.gigabytedevelopersinc.app.explorer.misc.AnalyticsManager;
 import com.gigabytedevelopersinc.app.explorer.misc.Utils;
 
-/**
- * Created by HaKr on 18-Oct-14.
- */
+/** * @author Emmanuel Nwokoma (Founder and CEO of Gigabyte Developers INC) **/
 public abstract class ActionBarActivity extends AppCompatActivity{
 
     @Override

@@ -7,9 +7,6 @@ import android.os.Build;
 
 import com.gigabytedevelopersinc.app.explorer.misc.Utils;
 
-/**
- * Created by HaKr on 17/01/15.
- */
 public class UsbUtils {
 
     /* Helper Methods to Provide Readable Names for USB Constants */

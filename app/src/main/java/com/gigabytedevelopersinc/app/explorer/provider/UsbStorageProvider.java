@@ -1,19 +1,3 @@
-/*
- * (C) Copyright 2016 mjahnen <jahnen@in.tum.de>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 package com.gigabytedevelopersinc.app.explorer.provider;
 
 import android.app.PendingIntent;
@@ -27,13 +11,14 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
-import android.support.v4.provider.DocumentFile;
+import android.support.provider.DocumentFile;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 import android.webkit.MimeTypeMap;
 
+import com.gigabytedevelopersinc.app.explorer.provider.DocumentsProvider;
 import com.github.mjdev.libaums.UsbMassStorageDevice;
 import com.github.mjdev.libaums.fs.FileSystem;
 import com.github.mjdev.libaums.fs.UsbFile;
@@ -77,7 +62,7 @@ public class UsbStorageProvider extends DocumentsProvider {
     /**
      * Action string to request the permission to communicate with an UsbDevice.
      */
-    private static final String ACTION_USB_PERMISSION = "com.gigabytedevelopersinc.app.explorer.action.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "dev.dworks.apps.anexplorer.action.USB_PERMISSION";
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
