@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.2'
+    buildToolsVersion '27.0.3'
 
     applicationVariants.all { variant ->
         variant.outputs.all {
@@ -11,8 +11,8 @@ android {
     }
 
     defaultConfig {
-        versionName "2.3.4"
-        versionCode = 19
+        versionName "2.3.5"
+        versionCode = 20
         minSdkVersion 21
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -53,6 +53,10 @@ android {
         }
         underground {
             applicationId "com.gigabytedevelopersinc.app.explorer.underground"
+            dimension "default"
+        }
+        fdroid {
+            applicationId "com.gigabytedevelopersinc.app.explorer"
             dimension "default"
         }
         google {
@@ -100,7 +104,7 @@ android {
 
 ext {
     supportLibVersion = '27.0.2'
-    gmsVersion = '11.6.0'
+    gmsVersion = '11.8.0'
 }
 
 dependencies {

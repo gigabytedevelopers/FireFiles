@@ -42,6 +42,7 @@
                     android:paddingRight="16dp"
                     android:paddingStart="16dp"
                     android:textAlignment="viewStart"
+                    android:textCursorDrawable="@drawable/cursor_color"
                     android:textColorLink="@color/accentColor"
                     android:textSize="18sp" />
 
