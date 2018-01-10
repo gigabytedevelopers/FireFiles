@@ -12,7 +12,6 @@ import android.util.Log;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-@TargetApi(21)
 class DocumentsContractApi21 {
     private static final String TAG = "DocumentFile";
 
