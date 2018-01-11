@@ -123,10 +123,6 @@
             android:label="About"
             android:theme="@style/Theme.Document" />
 
-                    <!-- The music player Activity -->
-        <activity android:name=".music.MainActivity"></activity>
-        
-
         <receiver android:name=".receiver.PackageReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
