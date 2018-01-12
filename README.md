@@ -27,11 +27,12 @@ Top Features
 ★ **Document Editor** With FireFiles, you can easily edit files on the go. Support for every type of text files such as HTML, XHTML, TXT etc. You can also edit files when the phone is rooted. It is very simple and handy.
 
 ★ **Storage Analysis**
+
 ★ **RAM and Memory Cleanup**
 
 Other Features
 ==============
-* One and only file manager to support RTL languages like Arabic, Hebrew etc natively.
+* One of the few file managers that support RTL languages like Arabic, Hebrew etc natively.
 * The only app to Show Folder sizes across different storages.
 * First File Manager for Android TV!
 * Smallest File Manager on play store with size of 3MB only!!
