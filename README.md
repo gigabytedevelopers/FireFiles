@@ -5,7 +5,8 @@ FireFiles
 
 
 ![FireFiles](https://raw.githubusercontent.com/gigabytedevelopers/FireFiles/master/Gigs%20File%20Manager%20Icon.png)
-FireFiles is an all-in-one file management tool based on [AnExplorer](https://github.com/1hakr/AnExplorer).
+
+**FireFiles is an all-in-one file management tool based on [AnExplorer](https://github.com/1hakr/AnExplorer)**.
 
 It is Simple, Small, Fast and Efficient File Explorer and One of the Best File Manager apps on Google Play Store. Only file manager to support RTL and show size of folders across the storages. File Manager is designed for all android devices including Phones, Phablets, Tablets and Android TV. It's a fully designed with Material guidelines by Google. It supports all Android versions from Jellybean, Kitkat, Marshmallow to Nougat. We dont take any unnecessary permissions. The free version of FireFiles has ads (same as the parent app). You can buy the pro version for an adfree version which is less than a beer!
 
