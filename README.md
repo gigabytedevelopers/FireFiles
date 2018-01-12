@@ -1,14 +1,13 @@
-Gigs-Explorer Gigabyte File Manager
+FireFiles
 ==================================
 [<img alt="Get it on Google Play" height="80" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=com.gigabytedevelopersinc.app.explorer&referrer=github)
 [<img alt="Get it on Amazon" height="80" style="margin-left: 10px;" src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-underground-app-us-black.png" />](https://www.amazon.com/gp/mas/dl/android?p=com.gigabytedevelopersinc.app.explorer)
 
 
-![GigsExplorer](https://raw.githubusercontent.com/gigabytedevelopers/Gigs-Explorer/master/BadgeIcon.png)
+![FireFiles](https://raw.githubusercontent.com/gigabytedevelopers/FireFiles/master/BadgeIcon.png)
+FireFiles is an all-in-one file management tool based on [AnExplorer](https://github.com/1hakr/AnExplorer).
 
-Gigs-Explorer (File Explorer) is an all-in-one file management tool.
-
-It is Simple, Small, Fast and Efficient File Explorer and One of the Best File Manager apps on Google Play Store. Only file manager to support RTL and show size of folders across the storages. File Manager is designed for all android devices including Phones, Phablets, Tablets and Android TV. It's a fully designed with Material guidelines by Google. It supports all Android versions from Jellybean, Kitkat, Marshmallow to Nougat. We dont take any unnecessary permissions. The free version of AnExplorer has ads. You can buy the pro version for an adfree version which is less than a beer!
+It is Simple, Small, Fast and Efficient File Explorer and One of the Best File Manager apps on Google Play Store. Only file manager to support RTL and show size of folders across the storages. File Manager is designed for all android devices including Phones, Phablets, Tablets and Android TV. It's a fully designed with Material guidelines by Google. It supports all Android versions from Jellybean, Kitkat, Marshmallow to Nougat. We dont take any unnecessary permissions. The free version of FireFiles has ads (same as the parent app). You can buy the pro version for an adfree version which is less than a beer!
 
 Top Features
 ============
@@ -26,6 +25,9 @@ Top Features
 
 ★ **Document Editor** you can easily edit files on the go. Support for every type of text files such as HTML, XHTML, TXT etc. You can also edit files when the phone is rooted. It is very simple and handy.
 
+★ **Storage Analysis**
+★ **RAM and Memory Cleanup**
+
 Other Features
 ==============
 * One and only file manager to support RTL languages like Arabic, Hebrew etc natively
@@ -38,6 +40,7 @@ Other Features
 * Fully customizable themes colors for the app and theme types to choose from. Dark theme is fully supported. Choose the color that suits you from a wide range of material colours
 * Acts as a Standalone File Picker from other applications such as attaching document files from gmail
 * Has high quality thumbnail support in list / gridview for all types of file like images, videos, album art for music files and applications
+* **Currently, progress is being made on making in-app Music Player, PDF viewer, Video Player, Image Viewer and some other cool 😎 features that would make FireFiles standout! 😂. So, show contributions as Pull Requests would be gladly entertained with open arms! Feel free to contribute to the development of FireFiles!** 
 
 Feedback is greatly appreciated. Any issues please report through mail only to gigabytedevelopers@gmail.com
 
@@ -49,8 +52,8 @@ Join [G+ community](https://plus.google.com/communities/103917569291382037041) o
 
 Developed By
 ============
-
 * Gigabyte Developers Incorporated - <gigabytedevelopers@gmail.com>
+* 1hakr (**Original app idea**) - AnExplorer
 
 
 License
