@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 27
@@ -11,8 +12,8 @@ android {
     }
 
     defaultConfig {
-        versionName "2.3.6"
-        versionCode = 21
+        versionName "2.3.7"
+        versionCode = 22
         minSdkVersion 21
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -42,7 +43,7 @@ android {
         }
     }
     flavorDimensions "release", "default"
-    productFlavors {
+    /*productFlavors {
         free {
             applicationId "com.gigabytedevelopersinc.app.explorer"
             dimension "default"
@@ -58,6 +59,7 @@ android {
         fdroid {
             applicationId "com.gigabytedevelopersinc.app.explorer"
             dimension "default"
+            //ext.enableCrashlytics = false
         }
         google {
             dimension "release"
@@ -68,7 +70,7 @@ android {
         other {
             dimension "release"
         }
-    }
+    }*/
     variantFilter { variant ->
         def names = variant.flavors*.name
 
@@ -118,8 +120,12 @@ dependencies {
     implementation "com.android.support:cardview-v7:${supportLibVersion}"
     implementation "com.android.support:design:${supportLibVersion}"
     implementation "com.android.support:exifinterface:${supportLibVersion}"
-    freeImplementation "com.google.firebase:firebase-crash:${gmsVersion}"
-    freeImplementation "com.google.firebase:firebase-ads:${gmsVersion}"
+    //freeImplementation "com.google.firebase:firebase-crash:${gmsVersion}"
+    implementation ('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
+        transitive = true
+    }
+    implementation "com.google.firebase:firebase-core:${gmsVersion}"
+    implementation "com.google.firebase:firebase-ads:${gmsVersion}"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.3'
 }
@@ -131,6 +137,8 @@ android.signingConfigs.release.storePassword props.keyStorePassword
 android.signingConfigs.release.keyAlias props.keyAlias
 android.signingConfigs.release.keyPassword props.keyAliasPassword */
 
-if (getGradle().getStartParameter().getTaskRequests().toString().contains("Free")) {
+/*if (getGradle().getStartParameter().getTaskRequests().toString().contains("Free")) {
     apply plugin: 'com.google.gms.google-services'
-}
+}*/
+
+apply plugin: 'com.google.gms.google-services'

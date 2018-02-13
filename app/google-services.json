@@ -1,27 +1,27 @@
 {
   "project_info": {
-    "project_number": "934551147444",
-    "firebase_url": "https://gigabyte-developers-apps.firebaseio.com",
-    "project_id": "gigabyte-developers-apps",
-    "storage_bucket": "gigabyte-developers-apps.appspot.com"
+    "project_number": "211008111337",
+    "firebase_url": "https://api-4617962611760843834-658956.firebaseio.com",
+    "project_id": "api-4617962611760843834-658956",
+    "storage_bucket": "api-4617962611760843834-658956.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:934551147444:android:ad08da11eac6846a",
+        "mobilesdk_app_id": "1:211008111337:android:ad08da11eac6846a",
         "android_client_info": {
           "package_name": "com.gigabytedevelopersinc.app.calculator"
         }
       },
       "oauth_client": [
         {
-          "client_id": "934551147444-4id5tguur0tfqvekc7ch750ami2g1n3i.apps.googleusercontent.com",
+          "client_id": "211008111337-1p3sujh0togu9asgkkbshfr5rg3l9h4g.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAaMXZmIZ6mwDf-KTnV3Es5pZ0nbEKIhQo"
+          "current_key": "AIzaSyDmUx5sdspsMmwbja0S8HBCRK__kk5BC7Q"
         }
       ],
       "services": {
@@ -39,20 +39,20 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:934551147444:android:5a1e1ebe31c6429a",
+        "mobilesdk_app_id": "1:211008111337:android:5a1e1ebe31c6429a",
         "android_client_info": {
           "package_name": "com.gigabytedevelopersinc.app.explorer"
         }
       },
       "oauth_client": [
         {
-          "client_id": "934551147444-4id5tguur0tfqvekc7ch750ami2g1n3i.apps.googleusercontent.com",
+          "client_id": "211008111337-1p3sujh0togu9asgkkbshfr5rg3l9h4g.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAaMXZmIZ6mwDf-KTnV3Es5pZ0nbEKIhQo"
+          "current_key": "AIzaSyDmUx5sdspsMmwbja0S8HBCRK__kk5BC7Q"
         }
       ],
       "services": {
