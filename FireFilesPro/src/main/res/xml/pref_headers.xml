@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <header
+        android:fragment="com.gigabytedevelopersinc.app.explorer.setting.GeneralPreferenceFragment"
+        android:title="@string/pref_header_general" />
+    <header
+        android:fragment="com.gigabytedevelopersinc.app.explorer.setting.ThemePreferenceFragment"
+        android:title="@string/pref_header_theme" />
+    <header
+        android:fragment="com.gigabytedevelopersinc.app.explorer.setting.SecurityPreferenceFragment"
+        android:title="@string/pref_header_security" />
+    <header
+        android:fragment="com.gigabytedevelopersinc.app.explorer.setting.AdvancedPreferenceFragment"
+        android:title="@string/pref_header_advanced" />
+
+</preference-headers>

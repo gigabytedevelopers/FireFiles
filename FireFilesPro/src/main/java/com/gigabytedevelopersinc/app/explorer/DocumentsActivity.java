@@ -1,0 +1,1893 @@
+package com.gigabytedevelopersinc.app.explorer;
+
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ComponentName;
+import android.content.ContentProviderClient;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteFullException;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.DrawerLayout.DrawerListener;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.Executor;
+
+import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.archive.DocumentArchiveHelper;
+import com.gigabytedevelopersinc.app.explorer.fragment.ConnectionsFragment;
+import com.gigabytedevelopersinc.app.explorer.fragment.CreateDirectoryFragment;
+import com.gigabytedevelopersinc.app.explorer.fragment.CreateFileFragment;
+import com.gigabytedevelopersinc.app.explorer.fragment.DirectoryFragment;
+import com.gigabytedevelopersinc.app.explorer.fragment.HomeFragment;
+import com.gigabytedevelopersinc.app.explorer.fragment.MoveFragment;
+import com.gigabytedevelopersinc.app.explorer.fragment.PickFragment;
+import com.gigabytedevelopersinc.app.explorer.fragment.RecentsCreateFragment;
+import com.gigabytedevelopersinc.app.explorer.fragment.RootsFragment;
+import com.gigabytedevelopersinc.app.explorer.fragment.SaveFragment;
+import com.gigabytedevelopersinc.app.explorer.fragment.ServerFragment;
+import com.gigabytedevelopersinc.app.explorer.libcore.io.IoUtils;
+import com.gigabytedevelopersinc.app.explorer.misc.AnalyticsManager;
+import com.gigabytedevelopersinc.app.explorer.misc.AppRate;
+import com.gigabytedevelopersinc.app.explorer.misc.AsyncTask;
+import com.gigabytedevelopersinc.app.explorer.misc.ConnectionUtils;
+import com.gigabytedevelopersinc.app.explorer.misc.ContentProviderClientCompat;
+import com.gigabytedevelopersinc.app.explorer.misc.IntentUtils;
+import com.gigabytedevelopersinc.app.explorer.misc.MimePredicate;
+import com.gigabytedevelopersinc.app.explorer.misc.PermissionUtil;
+import com.gigabytedevelopersinc.app.explorer.misc.PinViewHelper;
+import com.gigabytedevelopersinc.app.explorer.misc.PinViewHelper.PINDialogFragment;
+import com.gigabytedevelopersinc.app.explorer.misc.ProviderExecutor;
+import com.gigabytedevelopersinc.app.explorer.misc.RootsCache;
+import com.gigabytedevelopersinc.app.explorer.misc.SAFManager;
+import com.gigabytedevelopersinc.app.explorer.misc.SystemBarTintManager;
+import com.gigabytedevelopersinc.app.explorer.misc.Utils;
+import com.gigabytedevelopersinc.app.explorer.model.DocumentInfo;
+import com.gigabytedevelopersinc.app.explorer.model.DocumentStack;
+import com.gigabytedevelopersinc.app.explorer.model.DocumentsContract;
+import com.gigabytedevelopersinc.app.explorer.model.DocumentsContract.Root;
+import com.gigabytedevelopersinc.app.explorer.model.DurableUtils;
+import com.gigabytedevelopersinc.app.explorer.model.RootInfo;
+import com.gigabytedevelopersinc.app.explorer.network.NetworkConnection;
+import com.gigabytedevelopersinc.app.explorer.pro.R;
+import com.gigabytedevelopersinc.app.explorer.provider.ExternalStorageProvider;
+import com.gigabytedevelopersinc.app.explorer.provider.RecentsProvider;
+import com.gigabytedevelopersinc.app.explorer.provider.RecentsProvider.RecentColumns;
+import com.gigabytedevelopersinc.app.explorer.provider.RecentsProvider.ResumeColumns;
+import com.gigabytedevelopersinc.app.explorer.setting.SettingsActivity;
+import com.gigabytedevelopersinc.app.explorer.ui.DirectoryContainerView;
+import com.gigabytedevelopersinc.app.explorer.ui.FloatingActionsMenu;
+import com.gigabytedevelopersinc.app.explorer.ui.fabs.SimpleMenuListenerAdapter;
+
+import static com.gigabytedevelopersinc.app.explorer.BaseActivity.State.ACTION_BROWSE;
+import static com.gigabytedevelopersinc.app.explorer.BaseActivity.State.ACTION_CREATE;
+import static com.gigabytedevelopersinc.app.explorer.BaseActivity.State.ACTION_GET_CONTENT;
+import static com.gigabytedevelopersinc.app.explorer.BaseActivity.State.ACTION_MANAGE;
+import static com.gigabytedevelopersinc.app.explorer.BaseActivity.State.ACTION_OPEN;
+import static com.gigabytedevelopersinc.app.explorer.BaseActivity.State.ACTION_OPEN_TREE;
+import static com.gigabytedevelopersinc.app.explorer.BaseActivity.State.MODE_GRID;
+import static com.gigabytedevelopersinc.app.explorer.BaseActivity.State.MODE_LIST;
+import static com.gigabytedevelopersinc.app.explorer.DocumentsApplication.isTelevision;
+import static com.gigabytedevelopersinc.app.explorer.fragment.DirectoryFragment.ANIM_DOWN;
+import static com.gigabytedevelopersinc.app.explorer.fragment.DirectoryFragment.ANIM_NONE;
+import static com.gigabytedevelopersinc.app.explorer.fragment.DirectoryFragment.ANIM_SIDE;
+import static com.gigabytedevelopersinc.app.explorer.fragment.DirectoryFragment.ANIM_UP;
+import static com.gigabytedevelopersinc.app.explorer.misc.AnalyticsManager.FILE_COUNT;
+import static com.gigabytedevelopersinc.app.explorer.misc.AnalyticsManager.FILE_MOVE;
+import static com.gigabytedevelopersinc.app.explorer.misc.AnalyticsManager.FILE_TYPE;
+import static com.gigabytedevelopersinc.app.explorer.misc.SAFManager.ADD_STORAGE_REQUEST_CODE;
+import static com.gigabytedevelopersinc.app.explorer.misc.Utils.EXTRA_ROOT;
+import static com.gigabytedevelopersinc.app.explorer.provider.ExternalStorageProvider.isDownloadAuthority;
+
+public class DocumentsActivity extends BaseActivity {
+
+    private static final String EXTRA_STATE = "state";
+    private static final String EXTRA_AUTHENTICATED = "authenticated";
+    private static final String EXTRA_ACTIONMODE = "actionmode";
+    private static final String EXTRA_SEARCH_STATE = "searchsate";
+
+    private static final int CODE_FORWARD = 42;
+    private static final int CODE_SETTINGS = 92;
+
+    private boolean mShowAsDialog;
+
+    private SearchView mSearchView;
+
+    private Toolbar mToolbar;
+    private Spinner mToolbarStack;
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private View mRootsContainer;
+    private View mInfoContainer;
+
+    private DirectoryContainerView mDirectoryContainer;
+
+    private boolean mIgnoreNextNavigation;
+    private boolean mIgnoreNextClose;
+    private boolean mIgnoreNextCollapse;
+
+    private boolean mSearchExpanded;
+    private boolean mSearchResultShown;
+
+    private RootsCache mRoots;
+    private State mState;
+	private boolean mAuthenticated;
+    private FrameLayout mRateContainer;
+    private boolean mActionMode;
+    private FloatingActionsMenu mActionMenu;
+    private RootInfo mParentRoot;
+
+    @Override
+    public void onCreate(Bundle icicle) {
+        setTheme(R.style.Theme_Document);
+        if(Utils.hasLollipop()){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        }
+        else if(Utils.hasKitKat()){
+            setTheme(R.style.Theme_Document_Translucent);
+        }
+        setUpStatusBar();
+    	
+/*		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
+				.penaltyLog()
+				.build());
+		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll()
+				.penaltyLog()
+				.build());
+*/
+        super.onCreate(icicle);
+
+		mRoots = DocumentsApplication.getRootsCache(this);
+
+        setResult(Activity.RESULT_CANCELED);
+        setContentView(R.layout.activity);
+
+        final Context context = this;
+        final Resources res = getResources();
+        mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
+
+        mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
+        mRateContainer = (FrameLayout) findViewById(R.id.container_rate);
+
+        initControls();
+
+        if (icicle != null) {
+            mState = icicle.getParcelable(EXTRA_STATE);
+            mAuthenticated = icicle.getBoolean(EXTRA_AUTHENTICATED);
+            mActionMode = icicle.getBoolean(EXTRA_ACTIONMODE);
+        } else {
+            buildDefaultState();
+        }
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitleTextAppearance(context, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
+        if(Utils.hasKitKat() && !Utils.hasLollipop()) {
+            ((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
+            mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
+        }
+
+
+        mToolbarStack = (Spinner) findViewById(R.id.stack);
+        mToolbarStack.setOnItemSelectedListener(mStackListener);
+
+        setSupportActionBar(mToolbar);
+
+        mRootsContainer = findViewById(R.id.drawer_roots);
+        mInfoContainer = findViewById(R.id.container_info);
+
+        if (!mShowAsDialog) {
+            // Non-dialog means we have a drawer
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
+            mDrawerLayout.setDrawerListener(mDrawerListener);
+            //mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
+            lockInfoContainter();
+        }
+
+        changeActionBarColor();
+        initProtection();
+
+        // Hide roots when we're managing a specific root
+        if (mState.action == ACTION_MANAGE) {
+            if (mShowAsDialog) {
+                findViewById(R.id.container_roots).setVisibility(View.GONE);
+            } else {
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            }
+        }
+
+        if (mState.action == ACTION_CREATE) {
+            final String mimeType = getIntent().getType();
+            final String title = getIntent().getStringExtra(IntentUtils.EXTRA_TITLE);
+            SaveFragment.show(getFragmentManager(), mimeType, title);
+        } else if (mState.action == ACTION_OPEN_TREE) {
+            PickFragment.show(getFragmentManager());
+        }
+
+        if (mState.action == ACTION_BROWSE) {
+            final Intent moreApps = new Intent(getIntent());
+            moreApps.setComponent(null);
+            moreApps.setPackage(null);
+            RootsFragment.show(getFragmentManager(), moreApps);
+        } else if (mState.action == ACTION_OPEN || mState.action == ACTION_CREATE
+                || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_OPEN_TREE) {
+            RootsFragment.show(getFragmentManager(), new Intent());
+        }
+
+        if (!mState.restored) {
+            if (mState.action == ACTION_MANAGE) {
+                final Uri rootUri = getIntent().getData();
+                new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
+            } else {
+            	if(isDownloadAuthority(getIntent())){
+            		onRootPicked(getDownloadRoot(), true);
+            	} else if(ConnectionUtils.isServerAuthority(getIntent())){
+                    RootInfo root = getIntent().getExtras().getParcelable(EXTRA_ROOT);
+                    onRootPicked(root, true);
+                } else if(Utils.isQSTile(getIntent())){
+                    NetworkConnection networkConnection = NetworkConnection.getDefaultServer(this);
+                    RootInfo root = mRoots.getRootInfo(networkConnection);
+                    onRootPicked(root, true);
+                } else{
+                    try {
+                        new RestoreStackTask().execute();
+                    }
+                    catch (SQLiteFullException e){
+                        Crashlytics.logException(e);
+                    }
+            	}
+            }
+        } else {
+            onCurrentDirectoryChanged(ANIM_NONE);
+        }
+
+        if(!PermissionUtil.hasStoragePermission(this)) {
+            requestStoragePermissions();
+        }
+    }
+
+    @Override
+    public String getTag() {
+        return null;
+    }
+
+    @Override
+    public void again() {
+        if(Utils.hasMarshmallow()) {
+            RootsCache.updateRoots(this, ExternalStorageProvider.AUTHORITY);
+            mRoots = DocumentsApplication.getRootsCache(this);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mRoots.updateAsync();
+                    final RootInfo root = getCurrentRoot();
+                    if(root.isHome()){
+                        HomeFragment homeFragment = HomeFragment.get(getFragmentManager());
+                        if(null != homeFragment) {
+                            homeFragment.reloadData();
+                        }
+                    }
+                }
+            }, 500);
+        }
+    }
+
+    private void lockInfoContainter() {
+        if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+            mDrawerLayout.closeDrawer(mInfoContainer);
+        }
+
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, getGravity());
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public int getGravity() {
+        if(Utils.hasJellyBeanMR1()){
+            Configuration config = getResources().getConfiguration();
+            if(config.getLayoutDirection() != View.LAYOUT_DIRECTION_LTR){
+                return Gravity.LEFT;
+            }
+        }
+        return Gravity.RIGHT;
+    }
+
+    public static boolean isRTL(Locale locale) {
+        final int directionality = Character.getDirectionality(locale.getDisplayName().charAt(0));
+        return directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
+                directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC;
+    }
+
+    private void initProtection() {
+
+		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
+			return;
+		}
+        final Dialog d = new Dialog(this, R.style.Theme_Document_DailogPIN);
+        d.setContentView(new PinViewHelper((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE), null, null) {
+            public void onEnter(String password) {
+                super.onEnter(password);
+                if (SettingsActivity.checkPin(DocumentsActivity.this, password)) {
+                	mAuthenticated = true;
+                	d.dismiss();
+                }
+                else {
+                    showError(R.string.incorrect_pin);
+                }
+            }
+
+            public void onCancel() {
+                super.onCancel();
+                finish();
+                d.dismiss();
+            }
+        }.getView(), new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        
+        PINDialogFragment pinFragment = new PINDialogFragment();
+        pinFragment.setDialog(d);
+        pinFragment.setCancelable(false);
+        pinFragment.show(getFragmentManager(), "PIN Dialog");
+	}
+
+
+    private void buildDefaultState() {
+        mState = new State();
+
+        final Intent intent = getIntent();
+        final String action = intent.getAction();
+        if (IntentUtils.ACTION_OPEN_DOCUMENT.equals(action)) {
+            mState.action = ACTION_OPEN;
+        } else if (IntentUtils.ACTION_CREATE_DOCUMENT.equals(action)) {
+            mState.action = ACTION_CREATE;
+        } else if (IntentUtils.ACTION_GET_CONTENT.equals(action)) {
+            mState.action = ACTION_GET_CONTENT;
+        } else if (IntentUtils.ACTION_OPEN_DOCUMENT_TREE.equals(action)) {
+            mState.action = ACTION_OPEN_TREE;
+        } else if (DocumentsContract.ACTION_MANAGE_ROOT.equals(action)) {
+            //mState.action = ACTION_MANAGE;
+            mState.action = ACTION_BROWSE;
+        } else{
+            mState.action = ACTION_BROWSE;
+        }
+
+        if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT) {
+            mState.allowMultiple = intent.getBooleanExtra(IntentUtils.EXTRA_ALLOW_MULTIPLE, false);
+        }
+        
+        if (mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
+            mState.acceptMimes = new String[] { "*/*" };
+            mState.allowMultiple = true;
+        }
+        else if (intent.hasExtra(IntentUtils.EXTRA_MIME_TYPES)) {
+            mState.acceptMimes = intent.getStringArrayExtra(IntentUtils.EXTRA_MIME_TYPES);
+        } else {
+            mState.acceptMimes = new String[] { intent.getType() };
+        }
+
+        mState.localOnly = intent.getBooleanExtra(IntentUtils.EXTRA_LOCAL_ONLY, true);
+        mState.forceAdvanced = intent.getBooleanExtra(DocumentsContract.EXTRA_SHOW_ADVANCED	, false);
+        mState.showAdvanced = mState.forceAdvanced
+                | SettingsActivity.getDisplayAdvancedDevices(this);
+        
+        mState.rootMode = SettingsActivity.getRootMode(this);
+    }
+
+    private class RestoreRootTask extends AsyncTask<Void, Void, RootInfo> {
+        private Uri mRootUri;
+
+        public RestoreRootTask(Uri rootUri) {
+            mRootUri = rootUri;
+        }
+
+        @Override
+        protected RootInfo doInBackground(Void... params) {
+            final String rootId = DocumentsContract.getRootId(mRootUri);
+            return mRoots.getRootOneshot(mRootUri.getAuthority(), rootId);
+        }
+
+        @Override
+        protected void onPostExecute(RootInfo root) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
+            mState.restored = true;
+
+            if (root != null) {
+                onRootPicked(root, true);
+            } else {
+                Log.w(TAG, "Failed to find root: " + mRootUri);
+                finish();
+            }
+        }
+    }
+
+    private class RestoreStackTask extends AsyncTask<Void, Void, Void> {
+        private volatile boolean mRestoredStack;
+        private volatile boolean mExternal;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Restore last stack for calling package
+            final String packageName = getCallingPackageMaybeExtra();
+            final Cursor cursor = getContentResolver()
+                    .query(RecentsProvider.buildResume(packageName), null, null, null, null);
+            try {
+                if (null != cursor && cursor.moveToFirst()) {
+                    mExternal = cursor.getInt(cursor.getColumnIndex(ResumeColumns.EXTERNAL)) != 0;
+                    final byte[] rawStack = cursor.getBlob(
+                            cursor.getColumnIndex(ResumeColumns.STACK));
+                    DurableUtils.readFromArray(rawStack, mState.stack);
+                    mRestoredStack = true;
+                }
+            } catch (IOException e) {
+                Log.w(TAG, "Failed to resume: " + e);
+                Crashlytics.logException(e);
+            } finally {
+                IoUtils.closeQuietly(cursor);
+            }
+
+            if (mRestoredStack) {
+                // Update the restored stack to ensure we have freshest data
+                final Collection<RootInfo> matchingRoots = mRoots.getMatchingRootsBlocking(mState);
+                try {
+                    mState.stack.updateRoot(matchingRoots);
+                    mState.stack.updateDocuments(getContentResolver());
+                } catch (FileNotFoundException e) {
+                    Log.w(TAG, "Failed to restore stack: " + e);
+                    Crashlytics.logException(e);
+                    mState.stack.reset();
+                    mRestoredStack = false;
+                }
+            }
+            else{
+            	RootInfo root = getCurrentRoot();
+                if(null == root){
+                    return null;
+                }
+                final Uri uri = DocumentsContract.buildDocumentUri(root.authority, root.documentId);
+                DocumentInfo result;
+				try {
+					result = DocumentInfo.fromUri(getContentResolver(), uri);
+	                if (result != null) {
+	                    mState.stack.push(result);
+	                    mState.stackTouched = true;
+	                }
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+                    Crashlytics.logException(e);
+				}
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
+            mState.restored = true;
+
+            // Show drawer when no stack restored, but only when requesting
+            // non-visual content. However, if we last used an external app,
+            // drawer is always shown.
+
+            boolean showDrawer = false;
+            if (!mRestoredStack) {
+                showDrawer = false;
+            }
+            if (MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mState.acceptMimes)) {
+                showDrawer = false;
+            }
+            if (mExternal && (mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE)) {
+                showDrawer = false;
+            }
+
+            if (showDrawer) {
+                setRootsDrawerOpen(true);
+            }
+
+            onCurrentDirectoryChanged(ANIM_NONE);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        changeActionBarColor();
+        if (mState.action == ACTION_MANAGE) {
+            mState.showSize = true;
+            mState.showFolderSize = false;
+            mState.showThumbnail = true;
+        } else {
+            mState.showSize = SettingsActivity.getDisplayFileSize(this);
+            mState.showFolderSize = SettingsActivity.getDisplayFolderSize(this);
+            mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
+            mState.showHiddenFiles = SettingsActivity.getDisplayFileHidden(this);
+            invalidateMenu();
+        }
+    }
+
+    private DrawerListener mDrawerListener = new DrawerListener() {
+        @Override
+        public void onDrawerSlide(View drawerView, float slideOffset) {
+            mDrawerToggle.onDrawerSlide(drawerView, slideOffset);
+        }
+
+        @Override
+        public void onDrawerOpened(View drawerView) {
+            if(!mInfoContainer.equals(drawerView) && mDrawerLayout.isDrawerOpen(mInfoContainer)){
+                mDrawerLayout.closeDrawer(mInfoContainer);
+            }
+            mDrawerToggle.onDrawerOpened(drawerView);
+            updateActionBar();
+            invalidateMenu();
+        }
+
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            lockInfoContainter();
+            mDrawerToggle.onDrawerClosed(drawerView);
+            updateActionBar();
+            invalidateMenu();
+        }
+
+        @Override
+        public void onDrawerStateChanged(int newState) {
+            mDrawerToggle.onDrawerStateChanged(newState);
+        }
+    };
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (mDrawerToggle != null) {
+            mDrawerToggle.onConfigurationChanged(newConfig);
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if (mDrawerToggle != null) {
+            mDrawerToggle.syncState();
+        }
+        updateActionBar();
+    }
+
+    public void setRootsDrawerOpen(boolean open) {
+        if (!mShowAsDialog) {
+            if (open) {
+                mDrawerLayout.openDrawer(mRootsContainer);
+            } else {
+                mDrawerLayout.closeDrawer(mRootsContainer);
+            }
+        }
+    }
+    
+    public void setInfoDrawerOpen(boolean open) {
+    	if(!mShowAsDialog){
+    		setRootsDrawerOpen(false);
+            if (open) {
+            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, mInfoContainer);
+                mDrawerLayout.openDrawer(mInfoContainer);
+            } else {
+                lockInfoContainter();
+            }
+    	}
+    }
+
+    private boolean isRootsDrawerOpen() {
+        if (mShowAsDialog) {
+            return false;
+        } else {
+            return mDrawerLayout.isDrawerOpen(mRootsContainer);
+        }
+    }
+
+    public void updateActionBar() {
+        final RootInfo root = getCurrentRoot();
+        //final boolean showRootIcon = mShowAsDialog || (mState.action == DocumentsActivity.State.ACTION_MANAGE);
+        final boolean showIndicator = !mShowAsDialog && (mState.action != ACTION_MANAGE);
+        if(mShowAsDialog){
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(showIndicator);
+            //mToolbar.setLogo(R.drawable.logo);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            if (mDrawerToggle != null) {
+                mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
+            }
+        }
+        mToolbar.setNavigationContentDescription(R.string.drawer_open);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setRootsDrawerOpen(!isRootsDrawerOpen());
+            }
+        });
+
+        if (isRootsDrawerOpen()) {
+            //mToolbar.setNavigationIcon(root != null ? root.loadToolbarIcon(mToolbar.getContext()) : null);
+            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT
+                    || mState.action == ACTION_BROWSE || mState.action == ACTION_OPEN_TREE) {
+                //mToolbar.setTitle(R.string.title_open);
+                mToolbar.setTitle(R.string.app_name);
+            } else if (mState.action == DocumentsActivity.State.ACTION_CREATE) {
+                mToolbar.setTitle(R.string.title_save);
+            }
+            mToolbarStack.setVisibility(View.GONE);
+            mToolbarStack.setAdapter(null);
+
+        } else {
+            //mToolbar.setNavigationIcon(R.drawable.ic_drawer_glyph);
+
+            if (mSearchExpanded) {
+                mToolbar.setTitle(null);
+                mToolbarStack.setVisibility(View.GONE);
+                mToolbarStack.setAdapter(null);
+            } else {
+                if (mState.stack.size() <= 1) {
+                    if(null != root){
+                        mToolbar.setTitle(root.title);
+                        AnalyticsManager.setCurrentScreen(this, root.derivedTag);
+                    }
+                    mToolbarStack.setVisibility(View.GONE);
+                    mToolbarStack.setAdapter(null);
+                } else {
+                    mToolbar.setTitle(null);
+                    mToolbarStack.setVisibility(View.VISIBLE);
+                    mToolbarStack.setAdapter(mStackAdapter);
+                    mIgnoreNextNavigation = true;
+                    mToolbarStack.setSelection(mStackAdapter.getCount() - 1);
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.activity, menu);
+
+        final MenuItem searchMenu = menu.findItem(R.id.menu_search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mSearchExpanded = mSearchResultShown = true;
+                mState.currentSearch = query;
+                mSearchView.clearFocus();
+                onCurrentDirectoryChanged(ANIM_NONE);
+                Bundle params = new Bundle();
+                params.putString("query", query);
+                AnalyticsManager.logEvent("search", getCurrentRoot(), params);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        MenuItemCompat.setOnActionExpandListener(searchMenu, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                mSearchExpanded = true;
+                updateActionBar();
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                mSearchExpanded = mSearchResultShown = false;
+                if (mIgnoreNextCollapse) {
+                    mIgnoreNextCollapse = false;
+                    updateActionBar();
+                    return true;
+                }
+
+                mState.currentSearch = null;
+                onCurrentDirectoryChanged(ANIM_NONE);
+                return true;
+            }
+        });
+
+        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                mSearchExpanded = mSearchResultShown = false;
+                if (mIgnoreNextClose) {
+                    mIgnoreNextClose = false;
+                    updateActionBar();
+                    return false;
+                }
+
+                mState.currentSearch = null;
+                onCurrentDirectoryChanged(ANIM_NONE);
+                return false;
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        updateMenuItems(menu);
+        return true;
+    }
+
+    public void updateMenuItems(Menu menu){
+        final FragmentManager fm = getFragmentManager();
+        final RootInfo root = getCurrentRoot();
+        final DocumentInfo cwd = getCurrentDirectory();
+
+        if(isTelevision()) {
+            menu.findItem(R.id.menu_create_dir).setVisible(showActionMenu());
+            menu.findItem(R.id.menu_create_file).setVisible(showActionMenu());
+        }
+        final MenuItem search = menu.findItem(R.id.menu_search);
+        final MenuItem sort = menu.findItem(R.id.menu_sort);
+        final MenuItem sortSize = menu.findItem(R.id.menu_sort_size);
+        final MenuItem grid = menu.findItem(R.id.menu_grid);
+        final MenuItem list = menu.findItem(R.id.menu_list);
+        final MenuItem settings = menu.findItem(R.id.menu_settings);
+
+        // Open drawer means we hide most actions
+        if (isRootsDrawerOpen()) {
+            search.setVisible(false);
+            sort.setVisible(false);
+            grid.setVisible(false);
+            list.setVisible(false);
+            mIgnoreNextCollapse = true;
+            search.collapseActionView();
+            return;
+        }
+
+        sort.setVisible(cwd != null);
+        grid.setVisible(!RootInfo.isOtherRoot(getCurrentRoot()) && mState.derivedMode != MODE_GRID);
+        list.setVisible(mState.derivedMode != MODE_LIST);
+
+        if (mState.currentSearch != null) {
+            // Search uses backend ranking; no sorting
+            //sort.setVisible(false);
+
+            search.expandActionView();
+
+            mSearchView.setIconified(false);
+            mSearchView.clearFocus();
+            mSearchView.setQuery(mState.currentSearch, false);
+        } else {
+            mIgnoreNextClose = true;
+            mSearchView.setIconified(true);
+            mSearchView.clearFocus();
+
+            mIgnoreNextCollapse = true;
+            search.collapseActionView();
+        }
+
+        // Only sort by size when visible
+        sortSize.setVisible(mState.showSize);
+
+        final boolean searchVisible;
+        if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
+            searchVisible = false;
+
+            // No display options in recent directories
+            if (cwd == null) {
+                grid.setVisible(false);
+                list.setVisible(false);
+            }
+            if (mState.action == State.ACTION_CREATE) {
+                if (null != SaveFragment.get(fm))
+                    SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
+            }
+        } else {
+            searchVisible = root != null
+                    && ((root.flags & Root.FLAG_SUPPORTS_SEARCH) != 0);
+            // TODO: Is this useful?
+            if(null != SaveFragment.get(fm))
+                SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
+
+            if(null != MoveFragment.get(fm))
+                MoveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isMoveSupported());
+        }
+
+        // TODO: close any search in-progress when hiding
+        search.setVisible(searchVisible);
+
+        settings.setVisible(mState.action != ACTION_MANAGE);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle != null) {
+        	if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+            	mDrawerLayout.closeDrawer(mInfoContainer);
+            }
+            if(mDrawerToggle.onOptionsItemSelected(item)){
+            	return true;
+            }
+        }
+
+        final int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }  else if (id == R.id.menu_create_dir) {
+            createFolder();
+            return true;
+        } else if (id == R.id.menu_create_file) {
+            onStateChanged();
+            createFile();
+            return true;
+        } else if (id == R.id.menu_search) {
+            return false;
+        } else if (id == R.id.menu_sort_name) {
+            setUserSortOrder(State.SORT_ORDER_DISPLAY_NAME);
+            Bundle params = new Bundle();
+            params.putString("type", "name");
+            AnalyticsManager.logEvent("sort_name", params);
+            return true;
+        } else if (id == R.id.menu_sort_date) {
+            setUserSortOrder(State.SORT_ORDER_LAST_MODIFIED);
+            Bundle params = new Bundle();
+            params.putString("type", "modified");
+            AnalyticsManager.logEvent("sort_modified", params);
+            return true;
+        } else if (id == R.id.menu_sort_size) {
+            setUserSortOrder(State.SORT_ORDER_SIZE);
+            Bundle params = new Bundle();
+            params.putString("type", "size");
+            AnalyticsManager.logEvent("sort_size", params);
+            return true;
+        } else if (id == R.id.menu_grid) {
+            setUserMode(State.MODE_GRID);
+            Bundle params = new Bundle();
+            params.putString("type", "grid");
+            AnalyticsManager.logEvent("display_grid", params);
+            return true;
+        } else if (id == R.id.menu_list) {
+            setUserMode(State.MODE_LIST);
+            Bundle params = new Bundle();
+            params.putString("type", "list");
+            AnalyticsManager.logEvent("display_list", params);
+            return true;
+        } else if (id == R.id.menu_settings) {
+            startActivityForResult(new Intent(this, SettingsActivity.class), CODE_SETTINGS);
+            AnalyticsManager.logEvent("setting_open");
+            return true;
+        } else if (id == R.id.menu_about) {
+            startActivity(new Intent(this, AboutActivity.class));
+            AnalyticsManager.logEvent("about_open");
+            return true;
+        } else if (id == R.id.menu_exit) {
+            Bundle params = new Bundle();
+            AnalyticsManager.logEvent("app_exit");
+            android.os.Process.killProcess(android.os.Process.myPid());
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void createFolder() {
+        CreateDirectoryFragment.show(getSupportFragmentManager());
+        Bundle params = new Bundle();
+        params.putString(FILE_TYPE, "folder");
+        AnalyticsManager.logEvent("create_folder", params);
+    }
+
+    private void createFile() {
+        CreateFileFragment.show(getSupportFragmentManager(), "text/plain", "File");
+        Bundle params = new Bundle();
+        params.putString(FILE_TYPE, "file");
+        AnalyticsManager.logEvent("create_file", params);
+    }
+
+    /**
+     * Update UI to reflect internal state changes not from user.
+     */
+    public void onStateChanged() {
+        invalidateMenu();
+    }
+
+    /**
+     * Set state sort order based on explicit user action.
+     */
+    private void setUserSortOrder(int sortOrder) {
+        mState.userSortOrder = sortOrder;
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            if (directory != null) {
+                directory.onUserSortOrderChanged();
+            }
+        }
+    }
+
+    /**
+     * Set state mode based on explicit user action.
+     */
+    private void setUserMode(int mode) {
+        mState.userMode = mode;
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            if (directory != null) {
+                directory.onUserModeChanged();
+            }
+        }
+    }
+
+    /**
+     * refresh Data currently shown
+     */
+    private void refreshData() {
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            if (directory != null) {
+                directory.onUserSortOrderChanged();
+            }
+        }
+    }
+
+
+    public void setPending(boolean pending) {
+        final SaveFragment save = SaveFragment.get(getFragmentManager());
+        if (save != null) {
+            save.setPending(pending);
+        }
+
+        final RootInfo root = getCurrentRoot();
+        if(root != null && (root.isRootedStorage() || root.isUsbStorage())){
+            refreshData();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mSearchExpanded){
+
+        }
+        if (!mState.stackTouched) {
+            super.onBackPressed();
+            return;
+        }
+
+        final int size = mState.stack.size();
+        if (size > 1) {
+            mState.stack.pop();
+            onCurrentDirectoryChanged(ANIM_UP);
+        } else if (size == 1 && !isRootsDrawerOpen()) {
+            // TODO: open root drawer once we can capture back key
+            if(null != mParentRoot){
+                onRootPicked(mParentRoot, true);
+                mParentRoot = null;
+                return;
+            }
+            super.onBackPressed();
+        } else {
+            if(null != mParentRoot){
+                onRootPicked(mParentRoot, true);
+                mParentRoot = null;
+                return;
+            }
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        state.putParcelable(EXTRA_STATE, mState);
+        state.putBoolean(EXTRA_AUTHENTICATED, mAuthenticated);
+        state.putBoolean(EXTRA_ACTIONMODE, mActionMode);
+        state.putBoolean(EXTRA_SEARCH_STATE, mSearchResultShown);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+    }
+
+    private BaseAdapter mStackAdapter = new BaseAdapter() {
+        @Override
+        public int getCount() {
+            return mState.stack.size();
+        }
+
+        @Override
+        public DocumentInfo getItem(int position) {
+            return mState.stack.get(mState.stack.size() - position - 1);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_subdir_title, parent, false);
+            }
+
+            final TextView title = (TextView) convertView.findViewById(android.R.id.title);
+            final DocumentInfo doc = getItem(position);
+
+            if (position == 0) {
+                final RootInfo root = getCurrentRoot();
+                title.setText(root.title);
+            } else {
+                title.setText(doc.displayName);
+            }
+
+            // No padding when shown in actionbar
+            //convertView.setPadding(0, 0, 0, 0);
+            return convertView;
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.item_subdir, parent, false);
+            }
+
+            final ImageView subdir = (ImageView) convertView.findViewById(R.id.subdir);
+            final TextView title = (TextView) convertView.findViewById(android.R.id.title);
+            final DocumentInfo doc = getItem(position);
+
+            if (position == 0) {
+                final RootInfo root = getCurrentRoot();
+                title.setText(root.title);
+                subdir.setVisibility(View.GONE);
+            } else {
+                title.setText(doc.displayName);
+                subdir.setVisibility(View.VISIBLE);
+            }
+
+            return convertView;
+        }
+    };
+
+    private AdapterView.OnItemSelectedListener mStackListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (mIgnoreNextNavigation) {
+                mIgnoreNextNavigation = false;
+                return;
+            }
+
+            while (mState.stack.size() > position + 1) {
+                mState.stackTouched = true;
+                mState.stack.pop();
+            }
+            onCurrentDirectoryChanged(ANIM_UP);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            // Ignored
+        }
+    };
+
+    public RootInfo getCurrentRoot() {
+        if (mState.stack.root != null) {
+            return mState.stack.root;
+        } else {
+            return mState.action == ACTION_BROWSE ? mRoots.getDefaultRoot() : mRoots.getStorageRoot();
+        }
+    }
+    
+    public RootInfo getDownloadRoot() {
+    	return mRoots.getDownloadRoot();
+    }
+
+    public RootInfo getAppsBackupRoot() {
+        return mRoots.getAppsBackupRoot();
+    }
+
+    public RootsCache getRoots(){
+        return mRoots;
+    }
+
+    public DocumentInfo getCurrentDirectory() {
+        return mState.stack.peek();
+    }
+
+    private String getCallingPackageMaybeExtra() {
+        final String extra = getIntent().getStringExtra(DocumentsContract.EXTRA_PACKAGE_NAME);
+        return (extra != null) ? extra : getCallingPackage();
+    }
+
+    public Executor getCurrentExecutor() {
+        final DocumentInfo cwd = getCurrentDirectory();
+        if (cwd != null && cwd.authority != null) {
+            return ProviderExecutor.forAuthority(cwd.authority);
+        } else {
+            return AsyncTask.THREAD_POOL_EXECUTOR;
+        }
+    }
+
+    public State getDisplayState() {
+        return mState;
+    }
+    
+    public boolean isShowAsDialog() {
+    	return mShowAsDialog;
+    }
+
+    public boolean isCreateSupported() {
+        final DocumentInfo cwd = getCurrentDirectory();
+        if (mState.action == ACTION_OPEN_TREE) {
+            return cwd != null && cwd.isCreateSupported();
+        } else if (mState.action == ACTION_CREATE || mState.action == ACTION_GET_CONTENT) {
+            return false;
+        } else {
+            return cwd != null && cwd.isCreateSupported();
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public void onCurrentDirectoryChanged(int anim) {
+    	//FIX for java.lang.IllegalStateException ("Activity has been destroyed") 
+        if(!Utils.isActivityAlive(DocumentsActivity.this)){
+            return;
+        }
+        final FragmentManager fm = getFragmentManager();
+        final RootInfo root = getCurrentRoot();
+        DocumentInfo cwd = getCurrentDirectory();
+
+        //TODO : this has to be done nicely
+        if(cwd == null && (null != root && !root.isServerStorage())){
+	        final Uri uri = DocumentsContract.buildDocumentUri(
+	                root.authority, root.documentId);
+	        DocumentInfo result;
+			try {
+				result = DocumentInfo.fromUri(getContentResolver(), uri);
+	            if (result != null) {
+	                mState.stack.push(result);
+	                mState.stackTouched = true;
+	                cwd = result;
+	            }
+			} catch (FileNotFoundException e) {
+                Crashlytics.logException(e);
+			}
+        }
+        if(!SettingsActivity.getFolderAnimation(this)){
+            anim = 0;
+        }
+        mDirectoryContainer.setDrawDisappearingFirst(anim == ANIM_DOWN);
+
+        if (cwd == null) {
+            // No directory means recents
+        	if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
+                RecentsCreateFragment.show(fm);
+            } else {
+                if(root.isHome()){
+                    HomeFragment.show(fm);
+                }
+                else if(root.isConnections()){
+                    ConnectionsFragment.show(fm);
+                } else if(root.isServerStorage()){
+                    ServerFragment.show(fm, root);
+                } else {
+                    DirectoryFragment.showRecentsOpen(fm, anim);
+
+                    // Start recents in grid when requesting visual things
+                    final boolean visualMimes = true;//MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mState.acceptMimes);
+                    mState.userMode = visualMimes ? MODE_GRID : MODE_LIST;
+                    mState.derivedMode = mState.userMode;
+                }
+            }
+        } else {
+            if (mState.currentSearch != null && mSearchResultShown) {
+                // Ongoing search
+                DirectoryFragment.showSearch(fm, root, cwd, mState.currentSearch, anim);
+                mSearchResultShown = false;
+            } else {
+                // Normal boring directory
+                DirectoryFragment.showNormal(fm, root, cwd, anim);
+            }
+        }
+
+        // Forget any replacement target
+        if (mState.action == ACTION_CREATE) {
+            final SaveFragment save = SaveFragment.get(fm);
+            if (save != null) {
+                save.setReplaceTarget(null);
+            }
+        }
+
+        if (mState.action == ACTION_OPEN_TREE) {
+            final PickFragment pick = PickFragment.get(fm);
+            if (pick != null) {
+                    final CharSequence displayName = (mState.stack.size() <= 1) && null != root    ? root.title : cwd.displayName;
+                pick.setPickTarget(cwd, displayName);
+            }
+        }
+
+        final MoveFragment move = MoveFragment.get(fm);
+        if (move != null) {
+            move.setReplaceTarget(cwd);
+        }
+
+        final RootsFragment roots = RootsFragment.get(fm);
+        if (roots != null) {
+            roots.onCurrentRootChanged();
+        }
+
+        updateActionBar();
+        invalidateMenu();
+        dumpStack();
+
+        if(!Utils.isOtherBuild() && !isTelevision()){
+            AppRate.with(this, mRateContainer).listener(mOnShowListener).checkAndShow();
+        }
+    }
+
+    private AppRate.OnShowListener mOnShowListener = new AppRate.OnShowListener() {
+        @Override
+        public void onRateAppShowing() {
+            // View is shown
+        }
+
+        @Override
+        public void onRateAppDismissed() {
+            // User has dismissed it
+        }
+
+        @Override
+        public void onRateAppClicked() {
+            AnalyticsManager.logEvent("app_rate");
+        }
+    };
+
+    public void onStackPicked(DocumentStack stack) {
+        try {
+            // Update the restored stack to ensure we have freshest data
+            stack.updateDocuments(getContentResolver());
+
+            mState.stack = stack;
+            mState.stackTouched = true;
+            onCurrentDirectoryChanged(ANIM_SIDE);
+
+        } catch (FileNotFoundException e) {
+            Log.w(TAG, "Failed to restore stack: " + e);
+            Crashlytics.logException(e);
+        }
+    }
+    public void onRootPicked(RootInfo root, RootInfo parentRoot) {
+        mParentRoot = parentRoot;
+        onRootPicked(root, true);
+    }
+
+    public void onRootPicked(RootInfo root, boolean closeDrawer) {
+
+        if(null == root){
+            return;
+        }
+        // Clear entire backstack and start in new root
+        mState.stack.root = root;
+        mState.stack.clear();
+        mState.stackTouched = true;
+
+        if (RootInfo.isOtherRoot(root) || mRoots.isRecentsRoot(root)) {
+            onCurrentDirectoryChanged(ANIM_SIDE);
+        } else {
+            new PickRootTask(root).executeOnExecutor(getCurrentExecutor());
+        }
+
+        if (closeDrawer) {
+            setRootsDrawerOpen(false);
+        }
+    }
+
+    private class PickRootTask extends AsyncTask<Void, Void, DocumentInfo> {
+        private RootInfo mRoot;
+
+        public PickRootTask(RootInfo root) {
+            mRoot = root;
+        }
+
+        @Override
+        protected DocumentInfo doInBackground(Void... params) {
+            try {
+                final Uri uri = DocumentsContract.buildDocumentUri(
+                        mRoot.authority, mRoot.documentId);
+                return DocumentInfo.fromUri(getContentResolver(), uri);
+            } catch (FileNotFoundException e) {
+                Log.w(TAG, "Failed to find root", e);
+                Crashlytics.logException(e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(DocumentInfo result) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
+            if (result != null) {
+                mState.stack.push(result);
+                mState.stackTouched = true;
+                onCurrentDirectoryChanged(ANIM_SIDE);
+            }
+        }
+    }
+
+    public void onAppPicked(ResolveInfo info) {
+        final Intent intent = new Intent(getIntent());
+        intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+        intent.setComponent(new ComponentName(
+                info.activityInfo.applicationInfo.packageName, info.activityInfo.name));
+        startActivityForResult(intent, CODE_FORWARD);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult() code=" + resultCode);
+
+        // Only relay back results when not canceled; otherwise stick around to
+        // let the user pick another app/backend.
+        if (requestCode == CODE_FORWARD && resultCode != RESULT_CANCELED) {
+
+            // Remember that we last picked via external app
+            final String packageName = getCallingPackageMaybeExtra();
+            final ContentValues values = new ContentValues();
+            values.put(ResumeColumns.EXTERNAL, 1);
+            getContentResolver().insert(RecentsProvider.buildResume(packageName), values);
+
+            // Pass back result to original caller
+            setResult(resultCode, data);
+            finish();
+        } else if(requestCode == CODE_SETTINGS){
+        	if(resultCode == RESULT_FIRST_USER){
+        		recreate();
+        	}
+        }  else if(requestCode == ADD_STORAGE_REQUEST_CODE){
+            SAFManager.onActivityResult(this, requestCode, resultCode, data);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    public void onDocumentPicked(DocumentInfo doc) {
+        final FragmentManager fm = getFragmentManager();
+        if (doc.isDirectory() || DocumentArchiveHelper.isSupportedArchiveType(doc.mimeType)) {
+            mState.stack.push(doc);
+            mState.stackTouched = true;
+            onCurrentDirectoryChanged(ANIM_DOWN);
+            final MoveFragment move = MoveFragment.get(fm);
+            if (move != null) {
+                move.setReplaceTarget(doc);
+            }
+        } else if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT){
+        	// Explicit file picked, return
+            new ExistingFinishTask(doc.derivedUri).executeOnExecutor(getCurrentExecutor());
+        } else if (mState.action == ACTION_BROWSE) {
+
+            // Fall back to viewing
+            final Intent view = new Intent(Intent.ACTION_VIEW);
+            view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            view.setDataAndType(doc.derivedUri, doc.mimeType);
+            if((MimePredicate.mimeMatches(MimePredicate.SPECIAL_MIMES, doc.mimeType)
+                    || !Utils.isIntentAvailable(this, view)) && !Utils.hasNougat()){
+            	try {
+                	File file = new File(doc.path);
+    				view.setDataAndType(Uri.fromFile(file), doc.mimeType);
+				} catch (Exception e) {
+					view.setDataAndType(doc.derivedUri, doc.mimeType);
+                    Crashlytics.logException(e);
+				}
+            }
+
+            if(Utils.isIntentAvailable(this, view)){
+                //TODO: This temporarily fixes crash when the Activity that is opened is not
+                // exported gives java.lang.SecurityException: Permission Denial:
+                try {
+                    startActivity(view);
+                } catch (Exception e){
+                    Crashlytics.logException(e);
+                }
+            }
+            else{
+                showError(R.string.toast_no_application);
+            }
+        } else if (mState.action == ACTION_CREATE) {
+            // Replace selected file
+            // TODO: null pointer crash
+            SaveFragment.get(fm).setReplaceTarget(doc);
+        } else if (mState.action == ACTION_MANAGE) {
+            // First try managing the document; we expect manager to filter
+            // based on authority, so we don't grant.
+            final Intent manage = new Intent(DocumentsContract.ACTION_MANAGE_DOCUMENT);
+            manage.setData(doc.derivedUri);
+
+            if(Utils.isIntentAvailable(this, manage)){
+                try {
+                    startActivity(manage);
+                } catch (ActivityNotFoundException ex) {
+                    // Fall back to viewing
+                    Crashlytics.logException(ex);
+                    final Intent view = new Intent(Intent.ACTION_VIEW);
+                    view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    view.setData(doc.derivedUri);
+
+                    try {
+                        startActivity(view);
+                    } catch (ActivityNotFoundException ex2) {
+                        showError(R.string.toast_no_application);
+                        Crashlytics.logException(ex2);
+                    }
+                }
+            }
+            else{
+                showError(R.string.toast_no_application);
+            }
+        }
+    }
+	
+    public void onDocumentsPicked(List<DocumentInfo> docs) {
+        if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
+            final int size = docs.size();
+            final Uri[] uris = new Uri[size];
+            for (int i = 0; i < size; i++) {
+                uris[i] = docs.get(i).derivedUri;
+            }
+            new ExistingFinishTask(uris).executeOnExecutor(getCurrentExecutor());
+        }
+    }
+
+    public void onSaveRequested(DocumentInfo replaceTarget) {
+        new ExistingFinishTask(replaceTarget.derivedUri).executeOnExecutor(getCurrentExecutor());
+    }
+
+    public void onSaveRequested(String mimeType, String displayName) {
+        new CreateFinishTask(mimeType, displayName).executeOnExecutor(getCurrentExecutor());
+    }
+
+    public void onPickRequested(DocumentInfo pickTarget) {
+        final Uri viaUri = DocumentsContract.buildTreeDocumentUri(pickTarget.authority,
+                pickTarget.documentId);
+        new PickFinishTask(viaUri).executeOnExecutor(getCurrentExecutor());
+    }
+
+    public void onMoveRequested(ArrayList<DocumentInfo> docs, DocumentInfo toDoc, boolean deleteAfter) {
+    	new MoveTask(docs, toDoc, deleteAfter).executeOnExecutor(getCurrentExecutor());
+    }
+
+    private void saveStackBlocking() {
+        final ContentResolver resolver = getContentResolver();
+        final ContentValues values = new ContentValues();
+
+        final byte[] rawStack = DurableUtils.writeToArrayOrNull(mState.stack);
+        if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
+            // Remember stack for last create
+            values.clear();
+            values.put(RecentColumns.KEY, mState.stack.buildKey());
+            values.put(RecentColumns.STACK, rawStack);
+            resolver.insert(RecentsProvider.buildRecent(), values);
+        }
+
+        // Remember location for next app launch
+        final String packageName = getCallingPackageMaybeExtra();
+        values.clear();
+        values.put(ResumeColumns.STACK, rawStack);
+        values.put(ResumeColumns.EXTERNAL, 0);
+        resolver.insert(RecentsProvider.buildResume(packageName), values);
+    }
+
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void onFinished(Uri... uris) {
+        Log.d(TAG, "onFinished() " + Arrays.toString(uris));
+
+        final Intent intent = new Intent();
+        if (uris.length == 1) {
+            intent.setData(uris[0]);
+        } else if (uris.length > 1) {
+            final ClipData clipData = new ClipData(
+                    null, mState.acceptMimes, new ClipData.Item(uris[0]));
+            for (int i = 1; i < uris.length; i++) {
+                clipData.addItem(new ClipData.Item(uris[i]));
+            }
+            if(Utils.hasJellyBean()){
+                intent.setClipData(clipData);	
+            }
+            else{
+            	intent.setData(uris[0]);
+            }
+        }
+
+        if (mState.action == DocumentsActivity.State.ACTION_GET_CONTENT) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else if (mState.action == ACTION_OPEN_TREE) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                    | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+        } else {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        }
+
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+    }
+
+    private class CreateFinishTask extends AsyncTask<Void, Void, Uri> {
+        private final String mMimeType;
+        private final String mDisplayName;
+
+        public CreateFinishTask(String mimeType, String displayName) {
+            mMimeType = mimeType;
+            mDisplayName = displayName;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            setPending(true);
+        }
+
+        @Override
+        protected Uri doInBackground(Void... params) {
+            final ContentResolver resolver = getContentResolver();
+            final DocumentInfo cwd = getCurrentDirectory();
+
+            ContentProviderClient client = null;
+            Uri childUri = null;
+            try {
+                client = DocumentsApplication.acquireUnstableProviderOrThrow(
+                        resolver, cwd.derivedUri.getAuthority());
+                childUri = DocumentsContract.createDocument(
+                		resolver, cwd.derivedUri, mMimeType, mDisplayName);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to create document", e);
+                Crashlytics.logException(e);
+            } finally {
+            	ContentProviderClientCompat.releaseQuietly(client);
+            }
+
+            if (childUri != null) {
+                saveStackBlocking();
+            }
+
+            return childUri;
+        }
+
+        @Override
+        protected void onPostExecute(Uri result) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
+            if (result != null) {
+                onFinished(result);
+            } else {
+                final DocumentInfo cwd = getCurrentDirectory();
+                if(!isSAFIssue(cwd.documentId)) {
+                    showError(R.string.save_error);
+                }
+            }
+            setPending(false);
+        }
+    }
+
+    private class ExistingFinishTask extends AsyncTask<Void, Void, Void> {
+		private final Uri[] mUris;
+
+        public ExistingFinishTask(Uri... uris) {
+            mUris = uris;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            saveStackBlocking();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            onFinished(mUris);
+        }
+    }
+
+    private class PickFinishTask extends android.os.AsyncTask<Void, Void, Void> {
+        private final Uri mUri;
+
+        public PickFinishTask(Uri uri) {
+            mUri = uri;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            saveStackBlocking();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            onFinished(mUri);
+        }
+    }
+    
+    private class MoveTask extends AsyncTask<Void, Void, Boolean> {
+        private final DocumentInfo toDoc;
+        private final ArrayList<DocumentInfo> docs;
+		private boolean deleteAfter;
+
+        public MoveTask(ArrayList<DocumentInfo> docs, DocumentInfo toDoc, boolean deleteAfter) {
+            this.docs = docs;
+            this.toDoc = toDoc;
+            this.deleteAfter = deleteAfter;
+        }
+
+        @Override
+        protected void onPreExecute() {
+        	setMovePending(true);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            final ContentResolver resolver = getContentResolver();
+            final DocumentInfo cwd = null == toDoc ? getCurrentDirectory() : toDoc;
+
+			boolean hadTrouble = false;
+    		for (DocumentInfo doc : docs) {
+
+				if (!doc.isMoveSupported()) {
+    				Log.w(TAG, "Skipping " + doc);
+    				hadTrouble = true;
+    				continue;
+    			}
+
+    			try {
+                    if(deleteAfter) {
+                        hadTrouble = DocumentsContract.moveDocument(resolver, doc.derivedUri, null,
+                                cwd.derivedUri) == null;
+                    } else {
+                        hadTrouble = DocumentsContract.copyDocument(resolver, doc.derivedUri,
+                                cwd.derivedUri) == null;
+                    }
+    			} catch (Exception e) {
+    				Log.w(TAG, "Failed to move " + doc);
+    				hadTrouble = true;
+                    Crashlytics.logException(e);
+    			}
+    		}
+
+            Bundle params2 = new Bundle();
+            params2.putBoolean(FILE_MOVE, deleteAfter);
+            params2.putInt(FILE_COUNT, docs.size());
+            AnalyticsManager.logEvent("files_moved", params2);
+
+            return hadTrouble;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
+            if (result){
+                //if(!isSAFIssue(toDoc.documentId)){
+                    showError(R.string.save_error);
+                //}
+            }
+            MoveFragment.hide(getFragmentManager());
+            setMovePending(false);
+            refreshData();
+        }
+    }
+
+    public void setMovePending(boolean pending) {
+        final MoveFragment move = MoveFragment.get(getFragmentManager());
+        if (move != null) {
+            move.setPending(pending);
+        }
+    }
+
+    private void dumpStack() {
+        Log.d(TAG, "Current stack: ");
+        Log.d(TAG, " * " + mState.stack.root);
+        for (DocumentInfo doc : mState.stack) {
+            Log.d(TAG, " +-- " + doc);
+        }
+    }
+
+    public static DocumentsActivity get(Fragment fragment) {
+        return (DocumentsActivity) fragment.getActivity();
+    }
+
+	private final Handler handler = new Handler();
+	private Drawable oldBackground;
+
+    private void changeActionBarColor() {
+
+		int color = SettingsActivity.getPrimaryColor(this);
+		Drawable colorDrawable = new ColorDrawable(color);
+
+		if (oldBackground == null) {
+            getSupportActionBar().setBackgroundDrawable(colorDrawable);
+		} else {
+			TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, colorDrawable });
+            getSupportActionBar().setBackgroundDrawable(td);
+			td.startTransition(200);
+		}
+
+		oldBackground = colorDrawable;
+
+        setUpStatusBar();
+	}
+	
+	private Drawable.Callback drawableCallback = new Drawable.Callback() {
+		@Override
+		public void invalidateDrawable(Drawable who) {
+			getSupportActionBar().setBackgroundDrawable(who);
+		}
+
+		@Override
+		public void scheduleDrawable(Drawable who, Runnable what, long when) {
+			handler.postAtTime(what, when);
+		}
+
+		@Override
+		public void unscheduleDrawable(Drawable who, Runnable what) {
+			handler.removeCallbacks(what);
+		}
+	};
+	
+	public boolean getActionMode() {
+		return mActionMode;
+	}
+
+	public void setActionMode(boolean actionMode) {
+		mActionMode = actionMode;
+        mToolbar.setVisibility(actionMode ? View.INVISIBLE : View.VISIBLE);
+	}
+
+    public void invalidateMenu(){
+        supportInvalidateOptionsMenu();
+        mActionMenu.setVisibility(!isTelevision() && showActionMenu() ? View.VISIBLE : View.GONE);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void setUpStatusBar() {
+        int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor(this));
+        if(Utils.hasLollipop()){
+            getWindow().setStatusBarColor(color);
+        }
+        else if(Utils.hasKitKat()){
+            SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+            systemBarTintManager.setTintColor(color);
+            systemBarTintManager.setStatusBarTintEnabled(true);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void setUpDefaultStatusBar() {
+        int color = ContextCompat.getColor(this, R.color.alertColor);
+        if(Utils.hasLollipop()){
+            getWindow().setStatusBarColor(color);
+        }
+        else if(Utils.hasKitKat()){
+            SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+            systemBarTintManager.setTintColor(Utils.getStatusBarColor(color));
+            systemBarTintManager.setStatusBarTintEnabled(true);
+        }
+    }
+
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    private void initControls() {
+        mActionMenu = (FloatingActionsMenu) findViewById(R.id.fabs);
+        mActionMenu.setMenuListener(mMenuListener);
+    }
+
+    public void upadateActionItems(AbsListView currentView) {
+
+        mActionMenu.attachToListView(currentView);
+
+        int defaultColor = SettingsActivity.getPrimaryColor(this);
+        ViewCompat.setNestedScrollingEnabled(currentView, true);
+        mActionMenu.show();
+        mActionMenu.setVisibility(!isTelevision() && showActionMenu() ? View.VISIBLE : View.GONE);
+        mActionMenu.setBackgroundTintList(SettingsActivity.getAccentColor());
+        mActionMenu.setSecondaryBackgroundTintList(Utils.getActionButtonColor(defaultColor));
+    }
+
+    private boolean showActionMenu() {
+        final RootInfo root = getCurrentRoot();
+        return !RootInfo.isOtherRoot(root) &&
+                isCreateSupported() &&
+                (null != root && (!root.isRootedStorage() || Utils.isRooted()))
+                && mState.currentSearch == null;
+    }
+
+    private SimpleMenuListenerAdapter mMenuListener = new SimpleMenuListenerAdapter() {
+
+        @Override
+        public boolean onMenuItemSelected(MenuItem menuItem) {
+            Bundle params = new Bundle();
+            switch (menuItem.getItemId()){
+                case R.id.fab_create_file:
+                    onStateChanged();
+                    createFile();
+                    mActionMenu.closeMenu();
+                    break;
+
+                case R.id.fab_create_folder:
+                    createFolder();
+                    mActionMenu.closeMenu();
+                    break;
+
+            }
+            return false;
+        }
+    };
+}
