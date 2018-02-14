@@ -16,7 +16,7 @@ import org.apache.ftpserver.usermanager.impl.WritePermission;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.misc.ConnectionUtils;
 import com.gigabytedevelopersinc.app.explorer.network.NetworkServiceHandler;
 
@@ -63,7 +63,7 @@ public class ConnectionsService extends NetworkServerService {
         try {
             serverFactory.getUserManager().save(user);
         } catch (FtpException e) {
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         }
 
         // do start server

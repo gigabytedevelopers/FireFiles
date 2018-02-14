@@ -28,7 +28,7 @@ import android.util.Log;
 
 import java.io.FileNotFoundException;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.BaseActivity.State;
 import com.gigabytedevelopersinc.app.explorer.DocumentsApplication;
 import com.gigabytedevelopersinc.app.explorer.cursor.FilteringCursorWrapper;
@@ -104,7 +104,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             } catch (FileNotFoundException e) {
                 Log.w(TAG, "Failed to query", e);
                 result.exception = e;
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
                 return result;
             }
         }
@@ -174,7 +174,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             result.cursor = cursor;
         } catch (Exception e) {
             Log.w(TAG, "Failed to query", e);
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
             result.exception = e;
             ContentProviderClientCompat.releaseQuietly(client);
         } finally {

@@ -47,7 +47,7 @@ import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import  com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.misc.AnalyticsManager;
 import com.gigabytedevelopersinc.app.explorer.misc.AsyncTask;
 import com.gigabytedevelopersinc.app.explorer.misc.ContentProviderClientCompat;
@@ -229,13 +229,13 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 return text;
             }catch (Exception e){
                 errorMsg = e.getLocalizedMessage();
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
             }finally {
                 if(null != is){
                     try {
                         is.close();
                     } catch (Exception e) {
-                        Crashlytics.logException(e);
+                        CrashReportingManager.logException(e);
                     }
                 }
             }
@@ -303,7 +303,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                     ufos.close();
                 } catch (IOException e) {
                     errorMsg = e.getLocalizedMessage();
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
                 }
                 return null;
             } else {
@@ -317,7 +317,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                     os.close();
                 } catch (IOException e) {
                     errorMsg = e.getLocalizedMessage();
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
                 }
                 return null;
             }
@@ -365,7 +365,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             try {
                 return getContentResolver().openInputStream(uri);
             } catch (Exception e) {
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
             }
         } else if (scheme.startsWith(ContentResolver.SCHEME_FILE)) {
             File f = new File(uri.getPath());
@@ -373,7 +373,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 try {
                     return new FileInputStream(f);
                 } catch (Exception e) {
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
                 }
             }
         }
@@ -389,7 +389,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 Uri finalUri = null == documentFile ? uri : documentFile.getUri();
                 return getContentResolver().openOutputStream(finalUri);
             } catch (Exception e) {
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
             }
         } else if (scheme.startsWith(ContentResolver.SCHEME_FILE)) {
             File f = new File(uri.getPath());
@@ -397,7 +397,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 try {
                     return new FileOutputStream(f);
                 } catch (Exception e) {
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
                 }
             }
         }
@@ -424,7 +424,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         else if (!TextUtils.isEmpty(scheme) && scheme.startsWith(ContentResolver.SCHEME_FILE)) {
             name = uri.getLastPathSegment();
         } else {
-            Crashlytics.log(Log.ERROR, "Error", "URI Error"); //incomplete
+            CrashReportingManager.log(TAG, uri.toString()); //incomplete
         }
         getSupportActionBar().setTitle(FileUtils.getName(name));
         getSupportActionBar().setSubtitle("");

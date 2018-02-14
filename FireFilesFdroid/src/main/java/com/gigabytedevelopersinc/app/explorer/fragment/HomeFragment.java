@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.BaseActivity;
 import com.gigabytedevelopersinc.app.explorer.DocumentsActivity;
 import com.gigabytedevelopersinc.app.explorer.DocumentsApplication;
@@ -407,7 +407,7 @@ public class HomeFragment extends Fragment {
         }
         catch (Exception e){
             item.setVisibility(View.GONE);
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         }
     }
 

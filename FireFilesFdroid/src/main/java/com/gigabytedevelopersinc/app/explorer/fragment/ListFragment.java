@@ -28,7 +28,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.R;
 
 public class ListFragment extends Fragment {
@@ -71,7 +71,7 @@ public class ListFragment extends Fragment {
                 	@SuppressWarnings("unused")
 					ListView list = (ListView) rawListView;	
 				} catch (Exception e) {
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
 		               throw new RuntimeException(
 		                        "Content has view with id attribute 'android.R.id.list' "
 		                                + "that is not a ListView class");

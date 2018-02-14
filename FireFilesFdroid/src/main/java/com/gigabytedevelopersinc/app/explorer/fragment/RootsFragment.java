@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.BaseActivity;
 import com.gigabytedevelopersinc.app.explorer.BaseActivity.State;
 import com.gigabytedevelopersinc.app.explorer.DialogFragment;
@@ -226,7 +226,7 @@ public class RootsFragment extends Fragment {
                             //mList.setSelection(index);
                             mList.setItemChecked(index, true);
                         } catch (Exception e){
-                            Crashlytics.logException(e);
+                            CrashReportingManager.logException(e);
                         }
 
                         return;

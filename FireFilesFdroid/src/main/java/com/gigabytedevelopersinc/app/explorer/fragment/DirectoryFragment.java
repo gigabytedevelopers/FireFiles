@@ -73,7 +73,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.BaseActivity;
 import com.gigabytedevelopersinc.app.explorer.BaseActivity.State;
 import com.gigabytedevelopersinc.app.explorer.DialogFragment;
@@ -853,7 +853,7 @@ public class DirectoryFragment extends ListFragment {
                 hadTrouble = ! DocumentsContract.deleteDocument(resolver, doc.derivedUri);
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to delete " + doc);
-				Crashlytics.logException(e);
+				CrashReportingManager.logException(e);
 				hadTrouble = true;
 			}
 		}
@@ -900,7 +900,7 @@ public class DirectoryFragment extends ListFragment {
 			DocumentsContract.deleteDocument(resolver, doc.derivedUri);
 		} catch (Exception e) {
 			Log.w(TAG, "Failed to delete " + doc);
-			Crashlytics.logException(e);
+			CrashReportingManager.logException(e);
 			hadTrouble = true;
 		}
 
@@ -1082,7 +1082,7 @@ public class DirectoryFragment extends ListFragment {
                 hadTrouble = DocumentsContract.copyDocument(resolver, doc.derivedUri, appBackupUri) == null;
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to save " + doc);
-				Crashlytics.logException(e);
+				CrashReportingManager.logException(e);
 				hadTrouble = true;
 			}
 		}
@@ -1108,7 +1108,7 @@ public class DirectoryFragment extends ListFragment {
             hadTrouble = ! DocumentsContract.compressDocument(resolver, doc.derivedUri, documentIds);
         } catch (Exception e) {
             Log.w(TAG, "Failed to Compress " + doc);
-			Crashlytics.logException(e);
+			CrashReportingManager.logException(e);
             hadTrouble = true;
         }
 
@@ -1131,7 +1131,7 @@ public class DirectoryFragment extends ListFragment {
                 hadTrouble = ! DocumentsContract.uncompressDocument(resolver, doc.derivedUri);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to Uncompress " + doc);
-				Crashlytics.logException(e);
+				CrashReportingManager.logException(e);
                 hadTrouble = true;
             }
         }
@@ -1644,7 +1644,7 @@ public class DirectoryFragment extends ListFragment {
 				if (!(e instanceof OperationCanceledException)) {
 					Log.w(TAG, "Failed to load thumbnail for " + mUri + ": " + e);
 				}
-				Crashlytics.logException(e);
+				CrashReportingManager.logException(e);
 			} finally {
 				ContentProviderClientCompat.releaseQuietly(client);
 			}
@@ -1705,7 +1705,7 @@ public class DirectoryFragment extends ListFragment {
 				if (!(e instanceof OperationCanceledException)) {
 					Log.w(TAG, "Failed to calculate size for " + mPath + ": " + e);
 				}
-				Crashlytics.logException(e);
+				CrashReportingManager.logException(e);
 			}
 			return result;
 		}

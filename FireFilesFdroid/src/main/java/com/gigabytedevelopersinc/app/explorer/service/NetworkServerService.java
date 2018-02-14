@@ -9,7 +9,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.misc.LogUtils;
 import com.gigabytedevelopersinc.app.explorer.model.RootInfo;
 import com.gigabytedevelopersinc.app.explorer.network.NetworkConnection;
@@ -41,7 +41,7 @@ public abstract class NetworkServerService extends Service {
 
     protected void handleServerStartError(Exception e) {
         LogUtils.LOGD(TAG, "could not start server", e);
-        Crashlytics.logException(e);
+        CrashReportingManager.logException(e);
         sendBroadcast(new Intent(ACTION_FTPSERVER_FAILEDTOSTART));
     }
 

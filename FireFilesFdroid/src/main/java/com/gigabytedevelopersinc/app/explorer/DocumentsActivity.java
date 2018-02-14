@@ -61,7 +61,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.archive.DocumentArchiveHelper;
 import com.gigabytedevelopersinc.app.explorer.fragment.ConnectionsFragment;
 import com.gigabytedevelopersinc.app.explorer.fragment.CreateDirectoryFragment;
@@ -282,7 +282,7 @@ public class DocumentsActivity extends BaseActivity {
                         new RestoreStackTask().execute();
                     }
                     catch (SQLiteFullException e){
-                        Crashlytics.logException(e);
+                        CrashReportingManager.logException(e);
                     }
             	}
             }
@@ -470,7 +470,7 @@ public class DocumentsActivity extends BaseActivity {
                 }
             } catch (IOException e) {
                 Log.w(TAG, "Failed to resume: " + e);
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
             } finally {
                 IoUtils.closeQuietly(cursor);
             }
@@ -483,7 +483,7 @@ public class DocumentsActivity extends BaseActivity {
                     mState.stack.updateDocuments(getContentResolver());
                 } catch (FileNotFoundException e) {
                     Log.w(TAG, "Failed to restore stack: " + e);
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
                     mState.stack.reset();
                     mRestoredStack = false;
                 }
@@ -503,7 +503,7 @@ public class DocumentsActivity extends BaseActivity {
 	                }
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
 				}
             }
 
@@ -1205,7 +1205,7 @@ public class DocumentsActivity extends BaseActivity {
 	                cwd = result;
 	            }
 			} catch (FileNotFoundException e) {
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
 			}
         }
         if(!SettingsActivity.getFolderAnimation(this)){
@@ -1308,7 +1308,7 @@ public class DocumentsActivity extends BaseActivity {
 
         } catch (FileNotFoundException e) {
             Log.w(TAG, "Failed to restore stack: " + e);
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         }
     }
     public void onRootPicked(RootInfo root, RootInfo parentRoot) {
@@ -1352,7 +1352,7 @@ public class DocumentsActivity extends BaseActivity {
                 return DocumentInfo.fromUri(getContentResolver(), uri);
             } catch (FileNotFoundException e) {
                 Log.w(TAG, "Failed to find root", e);
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
                 return null;
             }
         }
@@ -1434,7 +1434,7 @@ public class DocumentsActivity extends BaseActivity {
     				view.setDataAndType(Uri.fromFile(file), doc.mimeType);
 				} catch (Exception e) {
 					view.setDataAndType(doc.derivedUri, doc.mimeType);
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
 				}
             }
 
@@ -1444,7 +1444,7 @@ public class DocumentsActivity extends BaseActivity {
                 try {
                     startActivity(view);
                 } catch (Exception e){
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
                 }
             }
             else{
@@ -1465,7 +1465,7 @@ public class DocumentsActivity extends BaseActivity {
                     startActivity(manage);
                 } catch (ActivityNotFoundException ex) {
                     // Fall back to viewing
-                    Crashlytics.logException(ex);
+                    CrashReportingManager.logException(ex);
                     final Intent view = new Intent(Intent.ACTION_VIEW);
                     view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                             | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -1475,7 +1475,7 @@ public class DocumentsActivity extends BaseActivity {
                         startActivity(view);
                     } catch (ActivityNotFoundException ex2) {
                         showError(R.string.toast_no_application);
-                        Crashlytics.logException(ex2);
+                        CrashReportingManager.logException(ex2);
                     }
                 }
             }
@@ -1601,7 +1601,7 @@ public class DocumentsActivity extends BaseActivity {
                 		resolver, cwd.derivedUri, mMimeType, mDisplayName);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to create document", e);
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
             } finally {
             	ContentProviderClientCompat.releaseQuietly(client);
             }
@@ -1709,7 +1709,7 @@ public class DocumentsActivity extends BaseActivity {
     			} catch (Exception e) {
     				Log.w(TAG, "Failed to move " + doc);
     				hadTrouble = true;
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
     			}
     		}
 

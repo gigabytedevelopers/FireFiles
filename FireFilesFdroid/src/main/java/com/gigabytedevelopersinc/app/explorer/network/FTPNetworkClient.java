@@ -8,7 +8,7 @@ import org.apache.commons.net.ftp.FTPReply;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.misc.LogUtils;
 
 /**
@@ -116,7 +116,7 @@ public class FTPNetworkClient extends NetworkClient {
 
         } catch (IOException e) {
             LogUtils.LOGE(TAG, "Error retrieving file from FTP server: " + host, e);
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         }
         return null;
     }

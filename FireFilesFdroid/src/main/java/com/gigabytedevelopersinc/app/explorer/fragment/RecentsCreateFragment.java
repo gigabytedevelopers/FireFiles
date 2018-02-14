@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.BaseActivity;
 import com.gigabytedevelopersinc.app.explorer.BaseActivity.State;
 import com.gigabytedevelopersinc.app.explorer.DocumentsApplication;
@@ -186,7 +186,7 @@ public class RecentsCreateFragment extends ListFragment {
                         result.add(stack);
                     } catch (IOException e) {
                         Log.w(TAG, "Failed to resolve stack: " + e);
-                        Crashlytics.logException(e);
+                        CrashReportingManager.logException(e);
                     }
                 }
             } finally {

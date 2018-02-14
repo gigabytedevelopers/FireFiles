@@ -41,7 +41,7 @@ import android.widget.TextView;
 
 import java.io.File;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.DialogFragment;
 import com.gigabytedevelopersinc.app.explorer.DocumentsActivity;
 import com.gigabytedevelopersinc.app.explorer.DocumentsApplication;
@@ -214,7 +214,7 @@ public class DetailFragment extends DialogFragment {
 					if (!(e instanceof OperationCanceledException)) {
 						Log.w(TAG_DETAIL, "Failed to load thumbnail for " + uri + ": " + e);
 					}
-					Crashlytics.logException(e);
+					CrashReportingManager.logException(e);
 				} finally {
 					ContentProviderClientCompat.releaseQuietly(client);
 				}

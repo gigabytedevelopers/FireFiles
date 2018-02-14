@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.libcore.io.IoUtils;
 
 /**
@@ -69,7 +69,7 @@ public class ParcelFileDescriptorUtil {
                 IoUtils.copy(mIn, mOut);
             } catch (IOException e) {
                 Log.e("TransferThread", "writing failed");
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
             } finally {
                 IoUtils.flushQuietly(mOut);
                 IoUtils.closeQuietly(mIn);

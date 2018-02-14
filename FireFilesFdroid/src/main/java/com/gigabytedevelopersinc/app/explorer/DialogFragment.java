@@ -7,7 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.widget.Button;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.misc.Utils;
 
 /**
@@ -28,7 +28,7 @@ public class DialogFragment extends AppCompatDialogFragment {
                 try{
                     tintButtons(getDialog());
                 } catch (Exception e){
-                    Crashlytics.logException(e);
+                    CrashReportingManager.logException(e);
                 }
             }
         });

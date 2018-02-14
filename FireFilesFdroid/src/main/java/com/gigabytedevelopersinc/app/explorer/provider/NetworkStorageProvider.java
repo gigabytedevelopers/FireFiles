@@ -20,7 +20,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.BuildConfig;
 import com.gigabytedevelopersinc.app.explorer.cursor.MatrixCursor;
 import com.gigabytedevelopersinc.app.explorer.cursor.MatrixCursor.RowBuilder;
@@ -90,7 +90,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -165,7 +165,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
                 includeFile(result, null, new NetworkFile(parent, file));
             }
         } catch (IOException e) {
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         }
         return result;
     }
@@ -194,7 +194,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
 
             return null;
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
             throw new FileNotFoundException("Failed to open document with id " + documentId +
                     " and mode " + mode);
         }

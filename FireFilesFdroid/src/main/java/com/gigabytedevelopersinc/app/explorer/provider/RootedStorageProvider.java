@@ -36,7 +36,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Scanner;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.BuildConfig;
 import com.gigabytedevelopersinc.app.explorer.R;
 import com.gigabytedevelopersinc.app.explorer.cursor.MatrixCursor;
@@ -106,7 +106,7 @@ public class RootedStorageProvider extends StorageProvider {
             root.path = path;
             root.docId = getDocIdForRootFile(path);
         } catch (FileNotFoundException e) {
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         }
 
         notifyRootsChanged(getContext());
@@ -411,14 +411,14 @@ public class RootedStorageProvider extends StorageProvider {
                     try {
                         includeRootFile(result, null, new RootFile(parent, line));
                     } catch (Exception e) {
-                        Crashlytics.logException(e);
+                        CrashReportingManager.logException(e);
                     }
 
                 }
                 scanner.close();
             }
         } catch (Exception e) {
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         }
         return result;
     }

@@ -27,7 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.BuildConfig;
 import com.gigabytedevelopersinc.app.explorer.DocumentsApplication;
 import com.gigabytedevelopersinc.app.explorer.R;
@@ -413,7 +413,7 @@ public class ExternalStorageProvider extends StorageProvider {
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }

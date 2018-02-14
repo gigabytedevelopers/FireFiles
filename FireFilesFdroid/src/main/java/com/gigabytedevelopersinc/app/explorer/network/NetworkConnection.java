@@ -14,7 +14,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.libcore.io.IoUtils;
 import com.gigabytedevelopersinc.app.explorer.misc.LogUtils;
 import com.gigabytedevelopersinc.app.explorer.model.Durable;
@@ -219,7 +219,7 @@ public class NetworkConnection  implements Durable, Parcelable {
                 connectClient();
             } catch (IOException e) {
                 LogUtils.LOGD(TAG, "Error getting home dir:"+ e);
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
             }
         }
         return path;
@@ -284,7 +284,7 @@ public class NetworkConnection  implements Durable, Parcelable {
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -305,7 +305,7 @@ public class NetworkConnection  implements Durable, Parcelable {
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -326,7 +326,7 @@ public class NetworkConnection  implements Durable, Parcelable {
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }

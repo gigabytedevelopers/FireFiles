@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.DialogFragment;
 import com.gigabytedevelopersinc.app.explorer.model.DocumentInfo;
 import com.gigabytedevelopersinc.app.explorer.model.DocumentsContract;
@@ -137,7 +137,7 @@ public class SAFManager {
             try {
                 activity.startActivityForResult(intent, ADD_STORAGE_REQUEST_CODE);
             } catch (ActivityNotFoundException e){
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
             }
         } else if(Utils.hasLollipop()){
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -154,7 +154,7 @@ public class SAFManager {
                             try {
                                 activity.startActivityForResult(intent, ADD_STORAGE_REQUEST_CODE);
                             } catch (ActivityNotFoundException e){
-                                Crashlytics.logException(e);
+                                CrashReportingManager.logException(e);
                             }
                         }
                     })

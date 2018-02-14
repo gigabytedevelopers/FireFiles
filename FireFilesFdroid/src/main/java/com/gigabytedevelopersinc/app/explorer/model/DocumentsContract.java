@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.libcore.io.IoUtils;
 import com.gigabytedevelopersinc.app.explorer.misc.ContentProviderClientCompat;
 import com.gigabytedevelopersinc.app.explorer.misc.ImageUtils;
@@ -1383,7 +1383,7 @@ public final class DocumentsContract {
                 return new AssetFileDescriptor(pfd, thumb[0], thumb[1], extras);
             }
         } catch (IOException e) {
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         }
 
         return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH, extras);

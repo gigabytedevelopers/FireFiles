@@ -49,7 +49,7 @@ import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.cursor.MatrixCursor;
 import com.gigabytedevelopersinc.app.explorer.libcore.io.IoUtils;
 import com.gigabytedevelopersinc.app.explorer.misc.Preconditions;
@@ -227,7 +227,7 @@ public class DocumentArchive implements Closeable {
                 return new DocumentArchive(context, snapshotFile, documentId, idDelimiter,
                         notificationUri);
             } catch (Exception e){
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
                 return null;
             }
         } finally {
@@ -417,12 +417,12 @@ public class DocumentArchive implements Closeable {
                                     }
                                 } catch (IOException e2) {
                                     Log.e(TAG, "Failed to close the pipe after an error.", e2);
-                                    Crashlytics.logException(e);
+                                    CrashReportingManager.logException(e);
                                 }
                             }
                         } catch (OperationCanceledException e) {
                             // Cancelled gracefully.
-                            Crashlytics.logException(e);
+                            CrashReportingManager.logException(e);
                         } finally {
                             IoUtils.closeQuietly(finalInputStream);
                         }
@@ -485,7 +485,7 @@ public class DocumentArchive implements Closeable {
         } catch (IOException e) {
             // Ignore the exception, as reading the EXIF may legally fail.
             Log.e(TAG, "Failed to obtain thumbnail from EXIF.", e);
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(inputStream);
         }

@@ -34,7 +34,7 @@ import android.view.MenuItem;
 
 import java.util.List;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.DocumentsApplication;
 import com.gigabytedevelopersinc.app.explorer.R;
 import com.gigabytedevelopersinc.app.explorer.misc.AnalyticsManager;
@@ -193,7 +193,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             //return Base64.encodeToString(value.getBytes(), Base64.DEFAULT);
         }
         catch (Exception e) {
-            Crashlytics.logException(e);
+            CrashReportingManager.logException(e);
         }
         return value;
     }

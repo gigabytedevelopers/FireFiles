@@ -30,7 +30,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.DocumentsActivity;
 import com.gigabytedevelopersinc.app.explorer.DocumentsApplication;
 import com.gigabytedevelopersinc.app.explorer.R;
@@ -138,7 +138,7 @@ public class IconHelper {
                 if (!(e instanceof OperationCanceledException)) {
                     Log.w(TAG, "Failed to load thumbnail for " + mUri + ": " + e);
                 }
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
             } finally {
                 ContentProviderClientCompat.releaseQuietly(client);
             }

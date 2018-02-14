@@ -72,7 +72,7 @@
 
 -dontwarn android.support.**
 
-# Crashlytics 1.+
+# CrashReportingManager 1.+
 -keep class io.fabric.** { *; }
 -keep class com.crashlytics.** { *; }
 -keep class com.crashlytics.android.**

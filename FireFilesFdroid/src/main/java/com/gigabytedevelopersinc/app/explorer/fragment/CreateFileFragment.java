@@ -33,7 +33,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import com.crashlytics.android.Crashlytics;
+import com.gigabytedevelopersinc.app.explorer.misc.CrashReportingManager;
 import com.gigabytedevelopersinc.app.explorer.DialogFragment;
 import com.gigabytedevelopersinc.app.explorer.DocumentsActivity;
 import com.gigabytedevelopersinc.app.explorer.DocumentsApplication;
@@ -140,7 +140,7 @@ public class CreateFileFragment extends DialogFragment {
                         resolver, mCwd.derivedUri, mMimeType, mDisplayName);
             } catch (Exception e) {
                 Log.w(DocumentsActivity.TAG, "Failed to create document", e);
-                Crashlytics.logException(e);
+                CrashReportingManager.logException(e);
             } finally {
                 ContentProviderClientCompat.releaseQuietly(client);
             }
