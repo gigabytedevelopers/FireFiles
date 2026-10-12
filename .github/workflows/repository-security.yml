@@ -1,0 +1,26 @@
+name: Repository security
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    name: Repository security
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the proposed tree without saved credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Reject editor autorun, disguised payloads, and committed credentials
+        run: python3 .github/scripts/check_repository_security.py
